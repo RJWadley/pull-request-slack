@@ -4,11 +4,14 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "tsc && node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@slack/bolt": "^3.11.1"
+    "@octokit/rest": "^18.12.0",
+    "@slack/bolt": "^3.11.1",
+    "dotenv": "^16.0.1"
   }
 }
