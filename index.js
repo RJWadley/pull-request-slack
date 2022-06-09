@@ -213,7 +213,7 @@ async function checkPulls() {
     });
   });
 
-  if (data.ok)
+  if (data.ok) {
     if (newPulls) {
       if (previousMessageId) {
         await app.client.chat.delete({
@@ -234,4 +234,7 @@ async function checkPulls() {
         exec("git fetch && git pull");
       });
     }
+  } else {
+    console.log("bad data", data);
+  }
 }
