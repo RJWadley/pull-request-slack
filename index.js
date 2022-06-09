@@ -1,4 +1,5 @@
 const { App } = require("@slack/bolt");
+const { exec } = require("child_process");
 const { Octokit } = require("@octokit/rest");
 const dotenv = require("dotenv");
 const fs = require("fs");
@@ -225,10 +226,12 @@ async function checkPulls() {
       publishMessage(blocks).then((data) => {
         previousMessageId = data.ts;
         console.log("SUCCESSFULLY CHECKED");
+        exec("git fetch && git pull");
       });
     } else {
       updateMessage(blocks).then((data) => {
         console.log("SUCCESSFULLY CHECKED (NO NEW PULLS)");
+        exec("git fetch && git pull");
       });
     }
 }
