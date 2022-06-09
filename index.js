@@ -212,22 +212,23 @@ async function checkPulls() {
     });
   });
 
-  if (newPulls) {
-    if (previousMessageId) {
-      await app.client.chat.delete({
-        token: process.env.SLACK_BOT_TOKEN,
-        channel: process.env.SLACK_CHANNEL_ID,
-        ts: previousMessageId,
+  if (data.ok)
+    if (newPulls) {
+      if (previousMessageId) {
+        await app.client.chat.delete({
+          token: process.env.SLACK_BOT_TOKEN,
+          channel: process.env.SLACK_CHANNEL_ID,
+          ts: previousMessageId,
+        });
+      }
+
+      publishMessage(blocks).then((data) => {
+        previousMessageId = data.ts;
+        console.log("SUCCESSFULLY CHECKED");
+      });
+    } else {
+      updateMessage(blocks).then((data) => {
+        console.log("SUCCESSFULLY CHECKED (NO NEW PULLS)");
       });
     }
-
-    publishMessage(blocks).then((data) => {
-      previousMessageId = data.ts;
-      console.log("SUCCESSFULLY CHECKED");
-    });
-  } else {
-    updateMessage(blocks).then((data) => {
-      console.log("SUCCESSFULLY CHECKED (NO NEW PULLS)");
-    });
-  }
 }
