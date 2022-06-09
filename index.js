@@ -223,7 +223,7 @@ async function checkPulls() {
     }
 
     publishMessage(blocks).then((data) => {
-      if (data.ok) previousMessageId = data.ts;
+      previousMessageId = data?.ts;
       console.log("SUCCESSFULLY CHECKED");
       exec("git fetch && git pull");
     });
