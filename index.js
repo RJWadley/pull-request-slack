@@ -68,8 +68,8 @@ async function checkPulls() {
   let newPulls = false;
 
   // load repos from file
-  let data = fs.readFileSync("repos.json");
-  let allRepos = JSON.parse(data);
+  let rawData = fs.readFileSync("repos.json");
+  let allRepos = JSON.parse(rawData);
 
   for (let i = 0; i < allRepos.length; i++) {
     let newData = await octokit.request("GET /repos/{org}/{repo}/pulls", {
@@ -213,28 +213,24 @@ async function checkPulls() {
     });
   });
 
-  if (data.ok) {
-    if (newPulls) {
-      if (previousMessageId) {
-        await app.client.chat.delete({
-          token: process.env.SLACK_BOT_TOKEN,
-          channel: process.env.SLACK_CHANNEL_ID,
-          ts: previousMessageId,
-        });
-      }
-
-      publishMessage(blocks).then((data) => {
-        previousMessageId = data.ts;
-        console.log("SUCCESSFULLY CHECKED");
-        exec("git fetch && git pull");
-      });
-    } else {
-      updateMessage(blocks).then((data) => {
-        console.log("SUCCESSFULLY CHECKED (NO NEW PULLS)");
-        exec("git fetch && git pull");
+  if (newPulls) {
+    if (previousMessageId) {
+      await app.client.chat.delete({
+        token: process.env.SLACK_BOT_TOKEN,
+        channel: process.env.SLACK_CHANNEL_ID,
+        ts: previousMessageId,
       });
     }
+
+    publishMessage(blocks).then((data) => {
+      if (data.ok) previousMessageId = data.ts;
+      console.log("SUCCESSFULLY CHECKED");
+      exec("git fetch && git pull");
+    });
   } else {
-    console.log("bad data", data);
+    updateMessage(blocks).then((data) => {
+      console.log("SUCCESSFULLY CHECKED (NO NEW PULLS)");
+      exec("git fetch && git pull");
+    });
   }
 }
