@@ -1,6 +1,7 @@
 const { App } = require("@slack/bolt");
 const { Octokit } = require("@octokit/rest");
 const dotenv = require("dotenv");
+const fs = require("fs");
 dotenv.config();
 
 // Initializes your app with your bot token and signing secret
@@ -13,12 +14,6 @@ const octokit = new Octokit({
   auth: process.env.GITHUB_TOKEN,
 });
 
-let allRepos = [
-  "reformcollective/newform",
-  "RREVentures/rre",
-  "reformcollective/galileo",
-  "RJWadley/first-bolt-app",
-];
 let previousMessageId;
 let trackedPulls = [];
 
@@ -70,6 +65,10 @@ async function checkPulls() {
   console.log("checking");
   let mappedData = [];
   let newPulls = false;
+
+  // load repos from file
+  let data = fs.readFileSync("repos.json");
+  let allRepos = JSON.parse(data);
 
   for (let i = 0; i < allRepos.length; i++) {
     let newData = await octokit.request("GET /repos/{org}/{repo}/pulls", {
