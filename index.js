@@ -224,6 +224,11 @@ async function checkPulls() {
 
     publishMessage(blocks).then((data) => {
       previousMessageId = data?.ts;
+      app.client.pins.add({
+        token: process.env.SLACK_BOT_TOKEN,
+        channel: process.env.SLACK_CHANNEL_ID,
+        timestamp: previousMessageId,
+      });
       console.log("SUCCESSFULLY CHECKED");
       exec("git fetch && git pull");
     });
