@@ -66,29 +66,41 @@ async function checkPulls() {
   console.log("checking");
   let mappedData = [];
   let newPulls = false;
+  let isError = false;
 
   // load repos from file
   let rawData = fs.readFileSync("repos.json");
   let allRepos = JSON.parse(rawData);
 
   for (let i = 0; i < allRepos.length; i++) {
-    let newData = await octokit.request("GET /repos/{org}/{repo}/pulls", {
-      org: allRepos[i].split("/")[0],
-      repo: allRepos[i].split("/")[1],
-    });
+    let newData = await octokit
+      .request("GET /repos/{org}/{repo}/pulls", {
+        org: allRepos[i].split("/")[0],
+        repo: allRepos[i].split("/")[1],
+      })
+      .catch((err) => {
+        console.log(err);
+        isError = true;
+      });
+
+    if (isError) return;
 
     //make sure is array
     if (Array.isArray(newData.data)) {
       let pulls = newData.data;
       for (let i = 0; i < pulls.length; i++) {
-        let reviews = await octokit.request(
-          "GET /repos/{org}/{repo}/pulls/{pull_number}/reviews",
-          {
+        let reviews = await octokit
+          .request("GET /repos/{org}/{repo}/pulls/{pull_number}/reviews", {
             org: pulls[i].base.repo.owner.login,
             repo: pulls[i].base.repo.name,
             pull_number: pulls[i].number,
-          }
-        );
+          })
+          .catch((err) => {
+            console.log(err);
+            isError = true;
+          });
+
+        if (isError) return;
 
         mappedData.push({
           id: pulls[i].id,
@@ -215,11 +227,15 @@ async function checkPulls() {
 
   if (newPulls) {
     if (previousMessageId) {
-      await app.client.chat.delete({
-        token: process.env.SLACK_BOT_TOKEN,
-        channel: process.env.SLACK_CHANNEL_ID,
-        ts: previousMessageId,
-      });
+      await app.client.chat
+        .delete({
+          token: process.env.SLACK_BOT_TOKEN,
+          channel: process.env.SLACK_CHANNEL_ID,
+          ts: previousMessageId,
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     }
 
     publishMessage(blocks).then((data) => {
