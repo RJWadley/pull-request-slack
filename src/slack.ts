@@ -31,6 +31,7 @@ export const sendBlocks = (blocks: KnownBlock[], newPulls: boolean) => {
 
 // Post a message to a channel your app is in using ID and message text
 const publishMessage = async (blocks: KnownBlock[]) => {
+  deleteAllMessages();
   // Call the chat.postMessage method using the built-in WebClient
   const result = await app.client.chat.postMessage({
     // The token you used to initialize your app
@@ -63,3 +64,25 @@ async function updateMessage(blocks: KnownBlock[]) {
 
   return result;
 }
+
+const deleteAllMessages = async () => {
+  //get all messages sent by the bot
+  const messages = await app.client.conversations.history({
+    token: SLACK_BOT_TOKEN,
+    channel: SLACK_CHANNEL_ID,
+    oldest: "0",
+    //only get messages older than 1 minute
+    latest: new Date(Date.now() - 1 * 60 * 1000).toISOString(),
+    inclusive: true,
+  });
+  if (messages && messages.messages)
+    messages.messages.forEach((message) => {
+      if (message.bot_id && message.bot_id === "B03K1Q5GA91" && message.ts) {
+        app.client.chat.delete({
+          token: SLACK_BOT_TOKEN,
+          channel: SLACK_CHANNEL_ID,
+          ts: message.ts,
+        });
+      }
+    });
+};

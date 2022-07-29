@@ -37,33 +37,10 @@ if (!repos.every((item) => typeof item === "string")) {
   process.exit(1);
 }
 
-const deleteAllMessages = async () => {
-  //get all messages sent by the bot
-  const messages = await app.client.conversations.history({
-    token: SLACK_BOT_TOKEN,
-    channel: SLACK_CHANNEL_ID,
-    oldest: "0",
-    //only get messages older than 10 minutes
-    latest: new Date(Date.now() - 10 * 60 * 1000).toISOString(),
-    inclusive: true,
-  });
-  if (messages && messages.messages)
-    messages.messages.forEach((message) => {
-      if (message.bot_id && message.bot_id === "B03K1Q5GA91" && message.ts) {
-        app.client.chat.delete({
-          token: SLACK_BOT_TOKEN,
-          channel: SLACK_CHANNEL_ID,
-          ts: message.ts,
-        });
-      }
-    });
-};
-
 (async () => {
   // Start your app
   await app.start(process.env.PORT || 3000);
 
   setInterval(() => checkPulls(repos), 1000 * 30);
   checkPulls(repos);
-  deleteAllMessages();
 })();
