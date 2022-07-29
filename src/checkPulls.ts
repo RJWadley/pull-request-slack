@@ -4,6 +4,7 @@ import { Octokit } from "@octokit/rest";
 import { KnownBlock } from "@slack/types";
 import { sendBlocks } from "./slack";
 import dotenv from "dotenv";
+import { getWorstUser, trackPulls } from "./trackPeople";
 
 dotenv.config();
 let SLACK_SIGNING_SECRET: string = process.env.SLACK_SIGNING_SECRET as string;
@@ -26,7 +27,7 @@ interface MappedReview {
   photo: string;
 }
 
-interface MappedPull {
+export interface MappedPull {
   id: number;
   owner: string;
   repository: string;
@@ -40,6 +41,12 @@ interface MappedPull {
   reviews: MappedReview[];
 }
 
+let trackedPulls: number[] = [];
+
+const octokit = new Octokit({
+  auth: GITHUB_TOKEN,
+});
+
 /**
  * key: github username
  * value: slack person id
@@ -47,23 +54,6 @@ interface MappedPull {
 let peopleMap: {
   [key: string]: string;
 } = JSON.parse(fs.readFileSync("people.json", "utf8"));
-
-let localStorage = new LocalStorage("./scratch");
-let rawData = localStorage.getItem("people");
-let trackedPulls: number[] = [];
-
-/**
- * key: github username
- * value: array of pull request ids
- */
-let peopleData: {
-  [key: string]: string[];
-} = rawData ? JSON.parse(rawData) : {};
-
-console.log(GITHUB_TOKEN);
-const octokit = new Octokit({
-  auth: GITHUB_TOKEN,
-});
 
 const pullsQuery = "GET /repos/{owner}/{repo}/pulls";
 const reviewsQuery = "GET /repos/{owner}/{repo}/pulls/{pull_number}/reviews";
@@ -146,6 +136,9 @@ export const checkPulls = async (repos: string[]) => {
       (pull) => pull.author === "dependabot[bot]"
     );
     let userPulls = pulls.filter((pull) => pull.author !== "dependabot[bot]");
+    for (let pull of userPulls) {
+      trackPulls(pull);
+    }
 
     blocks.push({
       type: "section",
@@ -223,6 +216,17 @@ export const checkPulls = async (repos: string[]) => {
         });
       });
     });
+  });
+
+  let worstInfo = getWorstUser();
+  let belowAverageBy = worstInfo.average - worstInfo.count;
+  let worstUserId = peopleMap[worstInfo.user];
+  blocks.push({
+    type: "section",
+    text: {
+      type: "mrkdwn",
+      text: `Hey <@${worstUserId}> (${worstInfo.user} on github), you've done ${belowAverageBy} fewer reviews than average. Wanna give this one a go?`,
+    },
   });
 
   sendBlocks(blocks, newPulls);
