@@ -223,16 +223,35 @@ export const checkPulls = async (repos: string[]) => {
 
   let worstInfo = getWorstUser();
   let belowAverageBy = worstInfo.average - worstInfo.count;
-  let worstUserId = peopleMap[worstInfo.user];
-  blocks.push({
-    type: "section",
-    text: {
-      type: "mrkdwn",
-      text: `Hey <@${worstUserId}> (${worstInfo.user} on github), you've done ${belowAverageBy} fewer reviews than average. Wanna give this one a go?`,
-    },
-  });
+  let worstUserIds = worstInfo.users.map(
+    (user) => `<@${peopleMap[user]}> (${user})`
+  );
+  if (belowAverageBy > 0)
+    blocks.push({
+      type: "section",
+      text: {
+        type: "mrkdwn",
+        text: `Hey ${arrayToList(
+          worstUserIds
+        )}, you've done ${belowAverageBy} fewer reviews than average. Wanna give this one a go?`,
+      },
+    });
 
   sendBlocks(blocks, newPulls);
   child.exec("git fetch && git pull");
   console.log("CHECK COMPLETE :D");
+};
+
+/**
+ * takes an array of items and concatenates them into a list
+ * so ['1', '2', '3'] becomes '1, 2, and 3'
+ */
+const arrayToList = (array: string[]) => {
+  if (array.length === 0) return "";
+  if (array.length === 1) return array[0];
+  if (array.length === 2) return `${array[0]} and ${array[1]}`;
+  if (array.length === 3) return `${array[0]}, ${array[1]}, and ${array[2]}`;
+  if (array.length > 3) {
+    return `${array.slice(0, -1).join(", ")}, and ${array[array.length - 1]}`;
+  }
 };

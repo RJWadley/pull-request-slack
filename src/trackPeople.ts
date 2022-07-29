@@ -62,13 +62,16 @@ export const trackPulls = (pull: MappedPull) => {
 
 export const getWorstUser = () => {
   //return the user with the fewest reviews
-  let worstUser = "";
+  let worstUser = [""];
   let worstUserCount = Infinity;
 
   for (let key in peopleData) {
     if (peopleData[key].length < worstUserCount) {
-      worstUser = key;
+      worstUser = [key];
       worstUserCount = peopleData[key].length;
+    }
+    if (peopleData[key].length === worstUserCount && !worstUser.includes(key)) {
+      worstUser.push(key);
     }
   }
 
@@ -79,7 +82,7 @@ export const getWorstUser = () => {
   averageNumberOfReviews /= Object.keys(peopleData).length;
 
   return {
-    user: worstUser,
+    users: worstUser,
     count: worstUserCount,
     average: averageNumberOfReviews,
   };
