@@ -1,8 +1,5 @@
 import { LocalStorage } from "node-localstorage";
 import fs from "fs";
-import { Octokit } from "@octokit/rest";
-import { KnownBlock } from "@slack/types";
-import { sendBlocks } from "./slack";
 import dotenv from "dotenv";
 import { MappedPull } from "./checkPulls";
 
@@ -82,7 +79,7 @@ export const getWorstUser = () => {
   averageNumberOfReviews /= Object.keys(peopleData).length;
 
   return {
-    user: "RJWadley", //worstUser,
+    user: worstUser,
     count: worstUserCount,
     average: averageNumberOfReviews,
   };

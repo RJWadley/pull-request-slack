@@ -1,10 +1,10 @@
-import { LocalStorage } from "node-localstorage";
 import fs from "fs";
 import { Octokit } from "@octokit/rest";
 import { KnownBlock } from "@slack/types";
 import { sendBlocks } from "./slack";
 import dotenv from "dotenv";
 import { getWorstUser, trackPulls } from "./trackPeople";
+import * as child from "child_process";
 
 dotenv.config();
 let SLACK_SIGNING_SECRET: string = process.env.SLACK_SIGNING_SECRET as string;
@@ -79,14 +79,11 @@ export const checkPulls = async (repos: string[]) => {
     //make sure is array
     let pulls = newData.data;
     for (let i = 0; i < pulls.length; i++) {
-      let reviews = await octokit.request(
-        "GET /repos/{owner}/{repo}/pulls/{pull_number}/reviews",
-        {
-          owner: pulls[i].base.repo.owner.login,
-          repo: pulls[i].base.repo.name,
-          pull_number: pulls[i].number,
-        }
-      );
+      let reviews = await octokit.request(reviewsQuery, {
+        owner: pulls[i].base.repo.owner.login,
+        repo: pulls[i].base.repo.name,
+        pull_number: pulls[i].number,
+      });
 
       if (reviews.status !== 200) {
         console.error(`Error getting reviews for ${repos[i]}`);
@@ -230,4 +227,6 @@ export const checkPulls = async (repos: string[]) => {
   });
 
   sendBlocks(blocks, newPulls);
+  child.exec("git fetch && git pull");
+  console.log("CHECK COMPLETE :D");
 };

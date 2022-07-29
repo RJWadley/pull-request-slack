@@ -1,4 +1,4 @@
-import { App, Block } from "@slack/bolt";
+import { App } from "@slack/bolt";
 import dotenv from "dotenv";
 import fs from "fs";
 import { checkPulls } from "./checkPulls";
@@ -17,8 +17,6 @@ if (
   console.error("Missing environment variables");
   process.exit(1);
 }
-
-let previousMessageId: string = "";
 
 export const app = new App({
   token: SLACK_BOT_TOKEN,

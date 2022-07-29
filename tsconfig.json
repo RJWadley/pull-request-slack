@@ -1,4 +1,7 @@
 {
   "extends": "@tsconfig/recommended/tsconfig.json",
+  "compilerOptions": {
+    "noUnusedLocals": true
+  },
   "include": ["src/**/*.ts"]
 }
