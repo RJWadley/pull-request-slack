@@ -25,7 +25,6 @@ let previousMessageId: string = "";
  * @param newPulls true if should send new message, false if should update old message
  */
 export const sendBlocks = (blocks: KnownBlock[], newPulls: boolean) => {
-  return;
   if (newPulls) return publishMessage(blocks);
   else return updateMessage(blocks);
 };
