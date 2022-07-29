@@ -43,7 +43,8 @@ const deleteAllMessages = async () => {
     token: SLACK_BOT_TOKEN,
     channel: SLACK_CHANNEL_ID,
     oldest: "0",
-    latest: Date.now().toString(),
+    //only get messages older than 10 minutes
+    latest: new Date(Date.now() - 10 * 60 * 1000).toISOString(),
     inclusive: true,
   });
   if (messages && messages.messages)
