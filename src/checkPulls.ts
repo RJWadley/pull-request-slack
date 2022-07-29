@@ -63,32 +63,38 @@ export const checkPulls = async (repos: string[]) => {
 
   let mappedData: MappedPull[] = [];
   let newPulls = false;
+  let isError = false;
 
   for (let i = 0; i < repos.length; i++) {
-    let newData = await octokit.request(pullsQuery, {
-      owner: repos[i].split("/")[0],
-      repo: repos[i].split("/")[1],
-    });
+    let newData = await octokit
+      .request(pullsQuery, {
+        owner: repos[i].split("/")[0],
+        repo: repos[i].split("/")[1],
+      })
+      .catch(() => {
+        isError = true;
+        console.error(`Error getting pull requests for ${repos[i]}`);
+        return;
+      });
 
-    //check if error
-    if (newData.status !== 200) {
-      console.error(`Error getting pull requests for ${repos[i]}`);
-      return;
-    }
+    if (isError || !newData?.data) return;
 
     //make sure is array
     let pulls = newData.data;
     for (let i = 0; i < pulls.length; i++) {
-      let reviews = await octokit.request(reviewsQuery, {
-        owner: pulls[i].base.repo.owner.login,
-        repo: pulls[i].base.repo.name,
-        pull_number: pulls[i].number,
-      });
+      let reviews = await octokit
+        .request(reviewsQuery, {
+          owner: pulls[i].base.repo.owner.login,
+          repo: pulls[i].base.repo.name,
+          pull_number: pulls[i].number,
+        })
+        .catch(() => {
+          isError = true;
+          console.error(`Error getting pull requests for ${repos[i]}`);
+          return;
+        });
 
-      if (reviews.status !== 200) {
-        console.error(`Error getting reviews for ${repos[i]}`);
-        return;
-      }
+      if (isError || !reviews?.data) return;
 
       mappedData.push({
         id: pulls[i].id,
