@@ -223,6 +223,7 @@ export const checkPulls = async (repos: string[]) => {
 
   let worstInfo = getWorstUser();
   let belowAverageBy = worstInfo.average - worstInfo.count;
+  belowAverageBy = Math.round(belowAverageBy * 1000) / 1000;
   let worstUserIds = worstInfo.users.map(
     (user) => `<@${peopleMap[user]}> (${user})`
   );
