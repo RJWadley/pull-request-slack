@@ -122,6 +122,7 @@ export const checkPulls = async (repos: string[]) => {
   }
 
   let blocks: KnownBlock[] = [];
+  let allPullsApproved = true;
 
   repos.forEach((repo) => {
     let repoName = repo.split("/")[1];
@@ -168,6 +169,7 @@ export const checkPulls = async (repos: string[]) => {
         newPulls = true;
         trackedPulls.push(pull.id);
       }
+      if (!pull.approved) allPullsApproved = false;
 
       blocks.push({
         type: "section",
@@ -227,7 +229,7 @@ export const checkPulls = async (repos: string[]) => {
   let worstUserIds = worstInfo.users.map(
     (user) => `<@${peopleMap[user]}> (${user})`
   );
-  if (belowAverageBy > 0)
+  if (belowAverageBy > 0 && !allPullsApproved)
     blocks.push({
       type: "section",
       text: {
