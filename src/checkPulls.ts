@@ -169,7 +169,7 @@ export const checkPulls = async (repos: string[]) => {
         newPulls = true;
         trackedPulls.push(pull.id);
       }
-      if (!pull.approved) allPullsApproved = false;
+      if (!pull.approved && !pull.draft) allPullsApproved = false;
 
       blocks.push({
         type: "section",
