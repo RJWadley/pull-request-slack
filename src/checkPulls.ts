@@ -204,6 +204,8 @@ export const checkPulls = async (repos: string[]) => {
             break;
           case "COMMENTED":
             message = "commented.";
+          case "PENDING":
+            message = "is reviewing.";
         }
 
         blocks.push({
