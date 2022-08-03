@@ -245,7 +245,7 @@ export const checkPulls = async (repos: string[]) => {
   let bestUserIds = userInfo.bestUsers.map(
     (user) => `<@${peopleMap[user]}> (${user})`
   );
-  if (aboveAverageBy > 2 && !allPullsApproved)
+  if (aboveAverageBy > 0 && !allPullsApproved)
     blocks.push({
       type: "section",
       text: {
