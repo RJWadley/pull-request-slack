@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "tsc --outDir build && node build/index.js",
+    "serve": "nodemon --watch './**/*.ts' --exec tsc --outDir build && node build/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
@@ -16,6 +17,7 @@
     "@types/node-localstorage": "^1.3.0",
     "dotenv": "^16.0.1",
     "node-localstorage": "^2.2.1",
+    "nodemon": "^2.0.19",
     "typescript": "^4.7.4"
   },
   "devDependencies": {
