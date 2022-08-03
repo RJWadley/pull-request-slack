@@ -60,18 +60,27 @@ export const trackPulls = (pull: MappedPull) => {
   });
 };
 
-export const getWorstUser = () => {
+export const getLeaderBoard = () => {
   //return the user with the fewest reviews
   let worstUser = [""];
   let worstUserCount = Infinity;
+  let bestUser = [""];
+  let bestUserCount = 0;
 
   for (let key in peopleData) {
     if (peopleData[key].length < worstUserCount) {
       worstUser = [key];
       worstUserCount = peopleData[key].length;
     }
+    if (peopleData[key].length > bestUserCount) {
+      bestUser = [key];
+      bestUserCount = peopleData[key].length;
+    }
     if (peopleData[key].length === worstUserCount && !worstUser.includes(key)) {
       worstUser.push(key);
+    }
+    if (peopleData[key].length === bestUserCount && !bestUser.includes(key)) {
+      bestUser.push(key);
     }
   }
 
@@ -82,8 +91,10 @@ export const getWorstUser = () => {
   averageNumberOfReviews /= Object.keys(peopleData).length;
 
   return {
-    users: worstUser,
-    count: worstUserCount,
+    worstUsers: worstUser,
+    worstUsersReviewCount: worstUserCount,
+    bestUsers: bestUser,
+    bestUsersReviewCount: bestUserCount,
     average: averageNumberOfReviews,
   };
 };

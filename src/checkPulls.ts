@@ -3,7 +3,7 @@ import { Octokit } from "@octokit/rest";
 import { KnownBlock } from "@slack/types";
 import { sendBlocks } from "./slack";
 import dotenv from "dotenv";
-import { getWorstUser, trackPulls } from "./trackPeople";
+import { getLeaderBoard, trackPulls } from "./trackPeople";
 import * as child from "child_process";
 
 dotenv.config();
@@ -223,10 +223,10 @@ export const checkPulls = async (repos: string[]) => {
     });
   });
 
-  let worstInfo = getWorstUser();
-  let belowAverageBy = worstInfo.average - worstInfo.count;
+  let userInfo = getLeaderBoard();
+  let belowAverageBy = userInfo.average - userInfo.worstUsersReviewCount;
   belowAverageBy = Math.round(belowAverageBy * 1000) / 1000;
-  let worstUserIds = worstInfo.users.map(
+  let worstUserIds = userInfo.worstUsers.map(
     (user) => `<@${peopleMap[user]}> (${user})`
   );
   if (belowAverageBy > 0 && !allPullsApproved)
@@ -237,6 +237,22 @@ export const checkPulls = async (repos: string[]) => {
         text: `Hey ${arrayToList(
           worstUserIds
         )}, you've done ${belowAverageBy} fewer reviews than average. Wanna give this one a go?`,
+      },
+    });
+
+  let aboveAverageBy = userInfo.bestUsersReviewCount - userInfo.average;
+  aboveAverageBy = Math.round(aboveAverageBy * 1000) / 1000;
+  let bestUserIds = userInfo.bestUsers.map(
+    (user) => `<@${peopleMap[user]}> (${user})`
+  );
+  if (aboveAverageBy > 2 && !allPullsApproved)
+    blocks.push({
+      type: "section",
+      text: {
+        type: "mrkdwn",
+        text: `Hey ${arrayToList(
+          bestUserIds
+        )}, you're too hot! You've done ${aboveAverageBy} more reviews than average. Leave some for the rest of us, ok?`,
       },
     });
 
