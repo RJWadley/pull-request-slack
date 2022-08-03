@@ -90,11 +90,24 @@ export const getLeaderBoard = () => {
   }
   averageNumberOfReviews /= Object.keys(peopleData).length;
 
+  let sortedPeople = Object.keys(peopleData).sort((a, b) => {
+    return peopleData[b].length - peopleData[a].length;
+  });
+  let leaderBoard = [];
+  for (let i = 0; i < sortedPeople.length; i++) {
+    let user = sortedPeople[i];
+    leaderBoard.push({
+      name: user,
+      count: peopleData[user].length,
+    });
+  }
+
   return {
     worstUsers: worstUser,
     worstUsersReviewCount: worstUserCount,
     bestUsers: bestUser,
     bestUsersReviewCount: bestUserCount,
     average: averageNumberOfReviews,
+    ranking: leaderBoard,
   };
 };

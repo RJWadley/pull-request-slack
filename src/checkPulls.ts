@@ -5,6 +5,7 @@ import { sendBlocks } from "./slack";
 import dotenv from "dotenv";
 import { getLeaderBoard, trackPulls } from "./trackPeople";
 import * as child from "child_process";
+import { MrkdwnElement } from "@slack/bolt";
 
 dotenv.config();
 let SLACK_SIGNING_SECRET: string = process.env.SLACK_SIGNING_SECRET as string;
@@ -223,38 +224,43 @@ export const checkPulls = async (repos: string[]) => {
     });
   });
 
+  let fields: MrkdwnElement[] = [];
   let userInfo = getLeaderBoard();
+
+  fields.push({
+    type: "mrkdwn",
+    text: `
+      \`\`\`
+      ${generateTable(userInfo.ranking)}
+      \`\`\`
+      `,
+  });
+
   let belowAverageBy = userInfo.average - userInfo.worstUsersReviewCount;
   belowAverageBy = Math.round(belowAverageBy * 1000) / 1000;
   let worstUserIds = userInfo.worstUsers.map(
     (user) => `<@${peopleMap[user]}> (${user})`
   );
-  if (belowAverageBy > 0 && !allPullsApproved)
-    blocks.push({
-      type: "section",
-      text: {
-        type: "mrkdwn",
-        text: `Hey ${arrayToList(
-          worstUserIds
-        )}, you've done ${belowAverageBy} fewer reviews than average. Wanna give this one a go?`,
-      },
-    });
 
   let aboveAverageBy = userInfo.bestUsersReviewCount - userInfo.average;
   aboveAverageBy = Math.round(aboveAverageBy * 1000) / 1000;
-  let bestUserIds = userInfo.bestUsers.map(
-    (user) => `<@${peopleMap[user]}> (${user})`
-  );
-  if (aboveAverageBy > 0 && !allPullsApproved)
-    blocks.push({
-      type: "section",
-      text: {
-        type: "mrkdwn",
-        text: `Hey ${arrayToList(
+  let bestUserIds = userInfo.bestUsers;
+  if (!allPullsApproved)
+    fields.push({
+      type: "mrkdwn",
+      text:
+        `Hey ${arrayToList(
+          worstUserIds
+        )}, you've done ${belowAverageBy} fewer reviews than average. Wanna give this one a go?\n\n\n` +
+        `Woah, ${arrayToList(
           bestUserIds
         )}, you're too hot! You've done ${aboveAverageBy} more reviews than average. Leave some for the rest of us, ok?`,
-      },
     });
+
+  blocks.push({
+    type: "section",
+    fields,
+  });
 
   sendBlocks(blocks, newPulls);
   child.exec("git fetch && git pull");
@@ -273,4 +279,80 @@ const arrayToList = (array: string[]) => {
   if (array.length > 3) {
     return `${array.slice(0, -1).join(", ")}, and ${array[array.length - 1]}`;
   }
+};
+
+/**
+ *
+ * given a list of names and numbers,
+ * generate an ascii leaderboard
+ *
+ * format the leaderboard like:
+ * ╔═══════════════╗
+ * ║  Leaderboard  ║
+ * ╠═════╤══╤══════╣
+ * ║ 1st │  │   16 ║
+ * ╟─────┼──┼──────╢
+ * ║ 2nd │  │   15 ║
+ * ╟─────┼──┼──────╢
+ * ║ 3rd │  │   14 ║
+ * ╟─────┼──┼──────╢
+ * ║ 4th │  │   13 ║
+ * ╟─────┼──┼──────╢
+ * ║ 5th │  │   12 ║
+ * ╚═════╧══╧══════╝
+ *
+ */
+const generateTable = (
+  list: {
+    name: string;
+    count: number;
+  }[]
+) => {
+  const beginningOfLineSpace = "  ";
+  let table = "";
+
+  //get the longest name
+  let nameSize = list.reduce(
+    (longest, item) =>
+      item.name.length > longest ? item.name.length : longest,
+    0
+  );
+
+  //if longest name is odd, add one to make it even
+  if (nameSize % 2 === 1) nameSize++;
+
+  let doubleBars = "═".repeat(nameSize);
+  let singleBars = "─".repeat(nameSize);
+  let spaces = " ".repeat(nameSize / 2);
+
+  //generate the header
+  table += `\n${beginningOfLineSpace}╔════════${doubleBars}═══════╗\n${beginningOfLineSpace}`;
+  table += `║ ${spaces} leaderBoard ${spaces} ║\n${beginningOfLineSpace}`;
+  table += `╠═════╤═${doubleBars}═╤══════╣\n${beginningOfLineSpace}`;
+
+  //generate the body
+  list.forEach((item, index) => {
+    let name = item.name;
+    let count = item.count;
+    let namePadding = " ".repeat(nameSize - name.length);
+    let countPadding = " ".repeat(4 - count.toString().length);
+
+    table += `║ ${numberToOrdinal(
+      index + 1
+    )} │ ${name}${namePadding} │ ${countPadding}${count} ║`;
+
+    table +=
+      index === list.length - 1
+        ? `\n${beginningOfLineSpace}╚═════╧═${doubleBars}═╧══════╝`
+        : `\n${beginningOfLineSpace}╟─────┼─${singleBars}─┼──────╢\n${beginningOfLineSpace}`;
+  });
+
+  return table;
+};
+
+const numberToOrdinal = (number: number) => {
+  if (number === 1) return "1st";
+  if (number === 2) return "2nd";
+  if (number === 3) return "3rd";
+  else return `${number}th`;
 };
