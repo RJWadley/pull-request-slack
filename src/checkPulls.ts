@@ -203,10 +203,17 @@ export const checkPulls = async (repos: string[]) => {
             message = "requested changes.";
             break;
           case "COMMENTED":
-            message = "commented.";
+            if (review.user === pull.author)
+              message = "(pull owner) commented.";
+            else message = "commented.";
+            break;
           case "PENDING":
-            if (review.user === pull.author) message = "commented.";
+            if (review.user === pull.author)
+              message = "(pull owner) commented.";
             else message = "is reviewing.";
+            break;
+          default:
+            message = "is now " + review.state + ".";
         }
 
         blocks.push({
