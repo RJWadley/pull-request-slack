@@ -76,6 +76,7 @@ export const checkPulls = async (repos: string[]) => {
         owner: repos[i].split("/")[0],
         repo: repos[i].split("/")[1],
         state: "all",
+        per_page: 100,
       })
       .catch(() => {
         isError = true;
