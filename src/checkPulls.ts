@@ -71,6 +71,7 @@ export const checkPulls = async (repos: string[]) => {
       .request(pullsQuery, {
         owner: repos[i].split("/")[0],
         repo: repos[i].split("/")[1],
+        state: "all",
       })
       .catch(() => {
         isError = true;
@@ -138,10 +139,15 @@ export const checkPulls = async (repos: string[]) => {
 
     let pulls = mappedData.filter((pull) => pull.repository === repoName);
     let dependabotPulls = pulls.filter(
-      (pull) => pull.author === "dependabot[bot]"
+      (pull) => pull.author === "dependabot[bot]" && pull.state === "open"
     );
-    let userPulls = pulls.filter((pull) => pull.author !== "dependabot[bot]");
-    for (let pull of userPulls) {
+    let userPulls = pulls.filter(
+      (pull) => pull.author !== "dependabot[bot]" && pull.state === "open"
+    );
+    let allUserPulls = pulls.filter(
+      (pull) => pull.author !== "dependabot[bot]"
+    );
+    for (let pull of allUserPulls) {
       trackPulls(pull);
     }
 
