@@ -59,8 +59,12 @@ let peopleMap: {
 const pullsQuery = "GET /repos/{owner}/{repo}/pulls";
 const reviewsQuery = "GET /repos/{owner}/{repo}/pulls/{pull_number}/reviews";
 
+let isChecking = false;
+
 export const checkPulls = async (repos: string[]) => {
   console.log("CHECKING FOR NEW PULLS");
+  if (isChecking) return;
+  isChecking = true;
 
   let mappedData: MappedPull[] = [];
   let newPulls = false;
@@ -283,6 +287,7 @@ export const checkPulls = async (repos: string[]) => {
   sendBlocks(blocks, newPulls);
   child.exec("git fetch && git pull");
   console.log("CHECK COMPLETE :D");
+  isChecking = false;
 };
 
 /**
