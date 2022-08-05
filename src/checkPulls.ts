@@ -39,6 +39,7 @@ export interface MappedPull {
   number: number;
   link: string;
   approved: boolean;
+  openedDate: string;
   reviews: MappedReview[];
 }
 
@@ -60,10 +61,14 @@ const pullsQuery = "GET /repos/{owner}/{repo}/pulls";
 const reviewsQuery = "GET /repos/{owner}/{repo}/pulls/{pull_number}/reviews";
 
 let isChecking = false;
+let firstRuns: string[] = [];
 
-export const checkPulls = async (repos: string[]) => {
-  console.log("CHECKING FOR NEW PULLS");
-  if (isChecking) return;
+export const checkPulls = async (repos: string[], number = 1) => {
+  console.log("CHECKING FOR NEW PULLS", JSON.stringify(repos), number);
+  if (isChecking && number === 1) {
+    console.log("SKIPPING CHECK, still checking");
+    return;
+  }
   isChecking = true;
 
   let mappedData: MappedPull[] = [];
@@ -75,8 +80,9 @@ export const checkPulls = async (repos: string[]) => {
       .request(pullsQuery, {
         owner: repos[i].split("/")[0],
         repo: repos[i].split("/")[1],
-        state: "all",
+        state: firstRuns.includes(repos[i]) ? "open" : "all",
         per_page: 100,
+        page: number,
       })
       .catch(() => {
         isError = true;
@@ -85,6 +91,16 @@ export const checkPulls = async (repos: string[]) => {
       });
 
     if (isError || !newData?.data) return;
+
+    if (!firstRuns.includes(repos[i])) {
+      if (newData.headers.link?.includes("next")) {
+        setTimeout(() => {
+          checkPulls([repos[i]], number + 1);
+        });
+      } else {
+        firstRuns.push(repos[i]);
+      }
+    }
 
     //make sure is array
     let pulls = newData.data;
@@ -110,6 +126,7 @@ export const checkPulls = async (repos: string[]) => {
         owner: pulls[i].base.repo.owner.login,
         repository: pulls[i].base.repo.name,
         state: pulls[i].state,
+        openedDate: pulls[i].created_at,
         title: pulls[i].title,
         draft: pulls[i].draft,
         author: pulls[i].user?.login ?? "unknown",
@@ -152,7 +169,11 @@ export const checkPulls = async (repos: string[]) => {
       (pull) => pull.author !== "dependabot[bot]" && pull.state === "open"
     );
     let allUserPulls = pulls.filter(
-      (pull) => pull.author !== "dependabot[bot]"
+      (pull) =>
+        pull.author !== "dependabot[bot]" &&
+        // opened in the last 30 days
+        new Date(pull.openedDate) >
+          new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
     );
     for (let pull of allUserPulls) {
       trackPulls(pull);
@@ -287,7 +308,7 @@ export const checkPulls = async (repos: string[]) => {
 
   sendBlocks(blocks, newPulls);
   child.exec("git fetch && git pull");
-  console.log("CHECK COMPLETE :D");
+  console.log("CHECK COMPELTE :D", JSON.stringify(repos), number);
   isChecking = false;
 };
 

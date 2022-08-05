@@ -19,7 +19,7 @@ if (
 }
 
 let localStorage = new LocalStorage("./scratch");
-let rawData = localStorage.getItem("people");
+let rawData = null; //localStorage.getItem("people");
 
 /**
  * key: github username
@@ -49,14 +49,16 @@ const savePeopleData = () => {
 
 export const trackPulls = (pull: MappedPull) => {
   pull.reviews.forEach((review) => {
-    peopleData[review.user] = peopleData[review.user] || [];
-    if (
-      review.state === "APPROVED" &&
-      !peopleData[review.user].includes(pull.id) &&
-      Object.keys(peopleMap).includes(review.user)
-    ) {
-      peopleData[review.user].push(pull.id);
-      savePeopleData();
+    if (Object.keys(peopleMap).includes(review.user)) {
+      peopleData[review.user] = peopleData[review.user] || [];
+      if (
+        review.state === "APPROVED" &&
+        !peopleData[review.user].includes(pull.id) &&
+        Object.keys(peopleMap).includes(review.user)
+      ) {
+        peopleData[review.user].push(pull.id);
+        savePeopleData();
+      }
     }
   });
 };

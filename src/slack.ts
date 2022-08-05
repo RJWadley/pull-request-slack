@@ -17,7 +17,7 @@ if (
   process.exit(1);
 }
 
-let previousMessageId: string = "";
+let previousMessageId: string | undefined = undefined;
 
 /**
  * update the blocks in the message
@@ -52,7 +52,12 @@ const publishMessage = async (blocks: KnownBlock[]) => {
 };
 
 async function updateMessage(blocks: KnownBlock[]) {
+  if (previousMessageId === undefined) {
+    return publishMessage(blocks);
+  }
+
   // Call the chat.postMessage method using the built-in WebClient
+  console.log("updating message", previousMessageId);
   const result = await app.client.chat.update({
     // The token you used to initialize your app
     token: SLACK_BOT_TOKEN,
@@ -74,6 +79,7 @@ const deleteAllMessages = async () => {
   if (messages && messages.messages)
     messages.messages.forEach((message) => {
       if (message.bot_id && message.bot_id === "B03K1Q5GA91" && message.ts) {
+        console.log("deleting message", message.ts);
         app.client.chat.delete({
           token: SLACK_BOT_TOKEN,
           channel: SLACK_CHANNEL_ID,
