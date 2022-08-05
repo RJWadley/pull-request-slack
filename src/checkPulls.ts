@@ -84,6 +84,8 @@ export const checkPulls = async (repos: string[]) => {
     //make sure is array
     let pulls = newData.data;
     for (let i = 0; i < pulls.length; i++) {
+      if (trackedPulls.includes(pulls[i].id) && pulls[i].state !== "open")
+        return;
       let reviews = await octokit
         .request(reviewsQuery, {
           owner: pulls[i].base.repo.owner.login,
