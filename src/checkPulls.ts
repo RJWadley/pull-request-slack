@@ -153,14 +153,6 @@ export const checkPulls = async (repos: string[], number = 1) => {
   repos.forEach((repo) => {
     let repoName = repo.split("/")[1];
 
-    blocks.push({
-      type: "header",
-      text: {
-        type: "plain_text",
-        text: repoName,
-      },
-    });
-
     let pulls = mappedData.filter((pull) => pull.repository === repoName);
     let dependabotPulls = pulls.filter(
       (pull) => pull.author === "dependabot[bot]" && pull.state === "open"
@@ -178,94 +170,102 @@ export const checkPulls = async (repos: string[], number = 1) => {
     for (let pull of allUserPulls) {
       trackPulls(pull);
     }
-
-    blocks.push({
-      type: "section",
-      text: {
-        type: "mrkdwn",
-        text: `${userPulls.length}\tUser Pulls \n ${dependabotPulls.length}\tDependabot Pulls`,
-      },
-      accessory: {
-        type: "button",
+    if (userPulls.length > 0) {
+      blocks.push({
+        type: "header",
         text: {
           type: "plain_text",
-          text: "View All",
-          emoji: true,
+          text: repoName,
         },
-        url: `https://github.com/${repo}/pulls`,
-      },
-    });
-    blocks.push({
-      type: "divider",
-    });
-
-    userPulls.forEach((pull) => {
-      if (!trackedPulls.includes(pull.id) && !pull.draft) {
-        newPulls = true;
-        trackedPulls.push(pull.id);
-      }
-      if (!pull.approved && !pull.draft) allPullsApproved = false;
-
+      });
       blocks.push({
         type: "section",
         text: {
           type: "mrkdwn",
-          text: `${pull.draft ? "*[  DRAFT  ]*\t" : ""}*${pull.number}*\t${
-            pull.title
-          }`,
+          text: `${userPulls.length}\tUser Pulls \n ${dependabotPulls.length}\tDependabot Pulls`,
         },
         accessory: {
           type: "button",
           text: {
             type: "plain_text",
-            text: pull.draft ? "View" : pull.approved ? "Approved" : "Review",
+            text: "View All",
             emoji: true,
           },
-          style: pull.approved || pull.draft ? undefined : "primary",
-          url: pull.link,
+          url: `https://github.com/${repo}/pulls`,
         },
       });
+      blocks.push({
+        type: "divider",
+      });
 
-      pull.reviews.forEach((review) => {
-        let message = "";
-
-        switch (review.state) {
-          case "APPROVED":
-            message = "approved this pull.";
-            break;
-          case "CHANGES_REQUESTED":
-            message = "requested changes.";
-            break;
-          case "COMMENTED":
-            if (review.user === pull.author)
-              message = "(pull owner) commented.";
-            else message = "commented.";
-            break;
-          case "PENDING":
-            if (review.user === pull.author)
-              message = "(pull owner) commented.";
-            else message = "is reviewing.";
-            break;
-          default:
-            message = "is now " + review.state + ".";
+      userPulls.forEach((pull) => {
+        if (!trackedPulls.includes(pull.id) && !pull.draft) {
+          newPulls = true;
+          trackedPulls.push(pull.id);
         }
+        if (!pull.approved && !pull.draft) allPullsApproved = false;
 
         blocks.push({
-          type: "context",
-          elements: [
-            {
-              type: "image",
-              image_url: review.photo,
-              alt_text: review.user,
+          type: "section",
+          text: {
+            type: "mrkdwn",
+            text: `${pull.draft ? "*[  DRAFT  ]*\t" : ""}*${pull.number}*\t${
+              pull.title
+            }`,
+          },
+          accessory: {
+            type: "button",
+            text: {
+              type: "plain_text",
+              text: pull.draft ? "View" : pull.approved ? "Approved" : "Review",
+              emoji: true,
             },
-            {
-              type: "mrkdwn",
-              text: `*${review.user}* ${message}`,
-            },
-          ],
+            style: pull.approved || pull.draft ? undefined : "primary",
+            url: pull.link,
+          },
+        });
+
+        pull.reviews.forEach((review) => {
+          let message = "";
+
+          switch (review.state) {
+            case "APPROVED":
+              message = "approved this pull.";
+              break;
+            case "CHANGES_REQUESTED":
+              message = "requested changes.";
+              break;
+            case "COMMENTED":
+              if (review.user === pull.author)
+                message = "(pull owner) commented.";
+              else message = "commented.";
+              break;
+            case "PENDING":
+              if (review.user === pull.author)
+                message = "(pull owner) commented.";
+              else message = "is reviewing.";
+              break;
+            default:
+              message = "is now " + review.state + ".";
+          }
+
+          blocks.push({
+            type: "context",
+            elements: [
+              {
+                type: "image",
+                image_url: review.photo,
+                alt_text: review.user,
+              },
+              {
+                type: "mrkdwn",
+                text: `*${review.user}* ${message}`,
+              },
+            ],
+          });
         });
       });
-    });
+    }
   });
 
   let fields: MrkdwnElement[] = [];
