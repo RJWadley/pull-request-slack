@@ -1,1 +1,6 @@
-["reformcollective/newform", "reformcollective/galileo", "HumeAI/hume-website"]
+[
+  "reformcollective/newform",
+  "reformcollective/galileo",
+  "HumeAI/hume-website",
+  "RREVentures/rre"
+]
