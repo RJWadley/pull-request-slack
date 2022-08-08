@@ -65,10 +65,6 @@ let firstBlockSend = true;
 
 export const checkPulls = async (repos: string[], number = 1) => {
   console.log("CHECKING FOR NEW PULLS", JSON.stringify(repos), number);
-  if (number === 1) {
-    console.log("SKIPPING CHECK, still checking");
-    return;
-  }
 
   let mappedData: MappedPull[] = [];
   let newPulls = false;
