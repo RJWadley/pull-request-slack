@@ -62,6 +62,7 @@ const reviewsQuery = "GET /repos/{owner}/{repo}/pulls/{pull_number}/reviews";
 
 let isChecking = false;
 let firstRuns: string[] = [];
+let firstBlockSend = true;
 
 export const checkPulls = async (repos: string[], number = 1) => {
   console.log("CHECKING FOR NEW PULLS", JSON.stringify(repos), number);
@@ -306,7 +307,10 @@ export const checkPulls = async (repos: string[], number = 1) => {
     fields,
   });
 
-  if (firstRuns.length === repos.length) sendBlocks(blocks, newPulls);
+  if (firstRuns.length === repos.length)
+    if (firstBlockSend) firstBlockSend = false;
+    else sendBlocks(blocks, newPulls);
+
   child.exec("git fetch && git pull");
   console.log("CHECK COMPELTE :D", JSON.stringify(repos), number);
   isChecking = false;
