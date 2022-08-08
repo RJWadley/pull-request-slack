@@ -306,7 +306,7 @@ export const checkPulls = async (repos: string[], number = 1) => {
     fields,
   });
 
-  sendBlocks(blocks, newPulls);
+  if (firstRuns.length === repos.length) sendBlocks(blocks, newPulls);
   child.exec("git fetch && git pull");
   console.log("CHECK COMPELTE :D", JSON.stringify(repos), number);
   isChecking = false;
