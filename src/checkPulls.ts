@@ -60,17 +60,15 @@ let peopleMap: {
 const pullsQuery = "GET /repos/{owner}/{repo}/pulls";
 const reviewsQuery = "GET /repos/{owner}/{repo}/pulls/{pull_number}/reviews";
 
-let isChecking = false;
 let firstRuns: string[] = [];
 let firstBlockSend = true;
 
 export const checkPulls = async (repos: string[], number = 1) => {
   console.log("CHECKING FOR NEW PULLS", JSON.stringify(repos), number);
-  if (isChecking && number === 1) {
+  if (number === 1) {
     console.log("SKIPPING CHECK, still checking");
     return;
   }
-  isChecking = true;
 
   let mappedData: MappedPull[] = [];
   let newPulls = false;
@@ -313,7 +311,6 @@ export const checkPulls = async (repos: string[], number = 1) => {
 
   child.exec("git fetch && git pull");
   console.log("CHECK COMPELTE :D", JSON.stringify(repos), number);
-  isChecking = false;
 };
 
 /**
