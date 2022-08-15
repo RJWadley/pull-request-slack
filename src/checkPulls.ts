@@ -66,6 +66,9 @@ let firstBlockSend = true;
 export const checkPulls = async (repos: string[], number = 1) => {
   console.log("CHECKING FOR NEW PULLS", JSON.stringify(repos), number);
 
+  if (firstRuns.length < repos.length && firstRuns.length !== 0 && number === 1)
+    return;
+
   let mappedData: MappedPull[] = [];
   let newPulls = false;
   let isError = false;
