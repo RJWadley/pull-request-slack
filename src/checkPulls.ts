@@ -64,10 +64,15 @@ let firstRuns: string[] = [];
 let firstBlockSend = true;
 
 export const checkPulls = async (repos: string[], number = 1) => {
-  console.log("CHECKING FOR NEW PULLS", JSON.stringify(repos), number);
-
-  if (firstRuns.length < repos.length && firstRuns.length !== 0 && number === 1)
+  if (
+    firstRuns.length < repos.length &&
+    firstRuns.length !== 0 &&
+    number === 1
+  ) {
+    console.log("first run, skipping checkPulls");
     return;
+  }
+  console.log("CHECKING FOR NEW PULLS", JSON.stringify(repos), number);
 
   let mappedData: MappedPull[] = [];
   let newPulls = false;
