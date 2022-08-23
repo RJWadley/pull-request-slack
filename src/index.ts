@@ -4,6 +4,7 @@ import fs from "fs";
 import { checkPulls } from "./checkPulls";
 
 dotenv.config();
+
 let SLACK_SIGNING_SECRET: string = process.env.SLACK_SIGNING_SECRET as string;
 let SLACK_BOT_TOKEN: string = process.env.SLACK_BOT_TOKEN as string;
 let GITHUB_TOKEN: string = process.env.GITHUB_TOKEN as string;
