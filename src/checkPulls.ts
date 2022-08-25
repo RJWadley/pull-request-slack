@@ -314,7 +314,7 @@ export const checkPulls = async (repos: string[], number = 1) => {
     else sendBlocks(blocks, newPulls);
 
   child.exec("git fetch && git pull");
-  console.log("CHECK COMPELTE :D", JSON.stringify(repos), number);
+  console.log("CHECK COMPLETE :D", JSON.stringify(repos), number);
 };
 
 /**
