@@ -58,6 +58,23 @@ export const trackPulls = (pull: MappedPull) => {
       ) {
         peopleData[review.user].push(pull.id);
         savePeopleData();
+
+        // expires 30 days after review
+        const dateOfReview = review.submittedAt
+          ? new Date(review.submittedAt)
+          : new Date();
+        const reviewExpiration = new Date(
+          dateOfReview.getTime() + 30 * 24 * 60 * 60 * 1000
+        );
+        const msUntilExpiration = reviewExpiration.getTime() - Date.now();
+
+        // 30 days from the time the review was submitted, remove the review from the list
+        setTimeout(() => {
+          peopleData[review.user] = peopleData[review.user].filter(
+            (id) => id !== pull.id
+          );
+          savePeopleData();
+        }, msUntilExpiration);
       }
     }
   });

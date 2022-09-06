@@ -26,6 +26,7 @@ interface MappedReview {
   user: string;
   state: string;
   photo: string;
+  submittedAt?: string;
 }
 
 export interface MappedPull {
@@ -144,6 +145,7 @@ export const checkPulls = async (repos: string[], number = 1) => {
             user: review.user?.login ?? "unknown",
             state: review.state,
             photo: review.user?.avatar_url ?? "",
+            submittedAt: review.submitted_at,
           };
         }),
       });
