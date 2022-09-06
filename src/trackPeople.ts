@@ -52,7 +52,6 @@ export const trackPulls = (pull: MappedPull) => {
     if (Object.keys(peopleMap).includes(review.user)) {
       peopleData[review.user] = peopleData[review.user] || [];
       if (
-        review.state === "APPROVED" &&
         !peopleData[review.user].includes(pull.id) &&
         Object.keys(peopleMap).includes(review.user)
       ) {
