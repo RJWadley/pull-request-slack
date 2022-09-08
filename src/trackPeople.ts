@@ -79,7 +79,7 @@ export const trackPulls = (pull: MappedPull) => {
   });
 };
 
-export const getLeaderBoard = () => {
+export const getLeaderBoard = (availablePulls: Record<string, number>) => {
   //return the user with the fewest reviews
   let worstUser = [""];
   let worstUserCount = Infinity;
@@ -87,19 +87,24 @@ export const getLeaderBoard = () => {
   let bestUserCount = 0;
 
   for (let key in peopleData) {
-    if (peopleData[key].length < worstUserCount) {
-      worstUser = [key];
-      worstUserCount = peopleData[key].length;
-    }
-    if (peopleData[key].length > bestUserCount) {
-      bestUser = [key];
-      bestUserCount = peopleData[key].length;
-    }
-    if (peopleData[key].length === worstUserCount && !worstUser.includes(key)) {
-      worstUser.push(key);
-    }
-    if (peopleData[key].length === bestUserCount && !bestUser.includes(key)) {
-      bestUser.push(key);
+    if (availablePulls[key] && availablePulls[key] > 0) {
+      if (peopleData[key].length < worstUserCount) {
+        worstUser = [key];
+        worstUserCount = peopleData[key].length;
+      }
+      if (peopleData[key].length > bestUserCount) {
+        bestUser = [key];
+        bestUserCount = peopleData[key].length;
+      }
+      if (
+        peopleData[key].length === worstUserCount &&
+        !worstUser.includes(key)
+      ) {
+        worstUser.push(key);
+      }
+      if (peopleData[key].length === bestUserCount && !bestUser.includes(key)) {
+        bestUser.push(key);
+      }
     }
   }
 

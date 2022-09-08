@@ -155,6 +155,8 @@ export const checkPulls = async (repos: string[], number = 1) => {
   let blocks: KnownBlock[] = [];
   let allPullsApproved = true;
 
+  let availablePulls: Record<string, number> = {};
+
   repos.forEach((repo) => {
     let repoName = repo.split("/")[1];
 
@@ -162,20 +164,31 @@ export const checkPulls = async (repos: string[], number = 1) => {
     let dependabotPulls = pulls.filter(
       (pull) => pull.author === "dependabot[bot]" && pull.state === "open"
     );
-    let userPulls = pulls.filter(
+    let openUserPulls = pulls.filter(
       (pull) => pull.author !== "dependabot[bot]" && pull.state === "open"
     );
-    let allUserPulls = pulls.filter(
+    let recentUserPulls = pulls.filter(
       (pull) =>
         pull.author !== "dependabot[bot]" &&
         // opened in the last 30 days
         new Date(pull.openedDate) >
           new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
     );
-    for (let pull of allUserPulls) {
+    for (let pull of recentUserPulls) {
       trackPulls(pull);
     }
-    if (userPulls.length > 0) {
+
+    openUserPulls.forEach((pull) => {
+      Object.keys(peopleMap).forEach((person) => {
+        if (
+          pull.author !== person &&
+          !pull.reviews.some((review) => review.user === person)
+        )
+          availablePulls[person] = (availablePulls[person] ?? 0) + 1;
+      });
+    });
+
+    if (openUserPulls.length > 0) {
       blocks.push({
         type: "header",
         text: {
@@ -187,7 +200,7 @@ export const checkPulls = async (repos: string[], number = 1) => {
         type: "section",
         text: {
           type: "mrkdwn",
-          text: `${userPulls.length}\tUser Pulls \n ${dependabotPulls.length}\tDependabot Pulls`,
+          text: `${openUserPulls.length}\tUser Pulls \n ${dependabotPulls.length}\tDependabot Pulls`,
         },
         accessory: {
           type: "button",
@@ -203,7 +216,7 @@ export const checkPulls = async (repos: string[], number = 1) => {
         type: "divider",
       });
 
-      userPulls.forEach((pull) => {
+      openUserPulls.forEach((pull) => {
         if (!trackedPulls.includes(pull.id) && !pull.draft) {
           newPulls = true;
           trackedPulls.push(pull.id);
@@ -274,7 +287,7 @@ export const checkPulls = async (repos: string[], number = 1) => {
   });
 
   let fields: MrkdwnElement[] = [];
-  let userInfo = getLeaderBoard();
+  let userInfo = getLeaderBoard(availablePulls);
 
   fields.push({
     type: "mrkdwn",
