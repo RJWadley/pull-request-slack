@@ -68,12 +68,15 @@ export const trackPulls = (pull: MappedPull) => {
         const msUntilExpiration = reviewExpiration.getTime() - Date.now();
 
         // 30 days from the time the review was submitted, remove the review from the list
-        setTimeout(() => {
-          peopleData[review.user] = peopleData[review.user].filter(
-            (id) => id !== pull.id
-          );
-          savePeopleData();
-        }, msUntilExpiration);
+        let interval = setInterval(() => {
+          if (Date.now() > reviewExpiration.getTime()) {
+            peopleData[review.user] = peopleData[review.user].filter(
+              (id) => id !== pull.id
+            );
+            savePeopleData();
+            clearInterval(interval);
+          }
+        }, msUntilExpiration / 30 + 1000);
       }
     }
   });
