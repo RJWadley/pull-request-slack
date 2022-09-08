@@ -145,7 +145,7 @@ export const checkPulls = async (repos: string[], number = 1) => {
             user: review.user?.login ?? "unknown",
             state: review.state,
             photo: review.user?.avatar_url ?? "",
-            submittedAt: review.submitted_at,
+            submittedAt: review.submitted_at ?? pulls[i].created_at,
           };
         }),
       });
