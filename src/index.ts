@@ -24,7 +24,7 @@ export const app = new App({
   signingSecret: SLACK_SIGNING_SECRET,
 });
 
-let repos: string[] = JSON.parse(fs.readFileSync("repos.json", "utf8"));
+const repos: string[] = JSON.parse(fs.readFileSync("repos.json", "utf8"));
 
 //verify that repo is an array
 if (!Array.isArray(repos)) {
