@@ -42,6 +42,6 @@ if (!repos.every((item) => typeof item === "string")) {
   // Start your app
   await app.start(process.env.PORT || 3000);
 
-  setInterval(() => checkPulls(repos), 1000 * 30);
-  checkPulls(repos);
+  setInterval(() => checkPulls(repos, 1), 1000 * 30);
+  checkPulls(repos, 1);
 })();
