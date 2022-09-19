@@ -108,34 +108,35 @@ export const checkPulls = async (reposIn: string[], number: number) => {
 
     //make sure is array
     let pulls = newData.data;
-    for (let i = 0; i < pulls.length; i++) {
-      if (trackedPulls.includes(pulls[i].id) && pulls[i].state !== "open")
-        return;
+    for (const pull of pulls) {
+      if (trackedPulls.includes(pull.id) && pull.state !== "open") return;
       let reviews = await octokit
         .request(reviewsQuery, {
-          owner: pulls[i].base.repo.owner.login,
-          repo: pulls[i].base.repo.name,
-          pull_number: pulls[i].number,
+          owner: pull.base.repo.owner.login,
+          repo: pull.base.repo.name,
+          pull_number: pull.number,
         })
         .catch(() => {
           isError = true;
-          console.error(`Error getting pull requests for ${repos[i]}`);
+          console.error(
+            `Error getting pull request for ${repo + pull.number}`
+          );
           return;
         });
 
       if (isError || !reviews?.data) return;
 
       mappedData.push({
-        id: pulls[i].id,
-        owner: pulls[i].base.repo.owner.login,
-        repository: pulls[i].base.repo.name,
-        state: pulls[i].state,
-        openedDate: pulls[i].created_at,
-        title: pulls[i].title,
-        draft: pulls[i].draft,
-        author: pulls[i].user?.login ?? "unknown",
-        number: pulls[i].number ?? Infinity,
-        link: pulls[i].html_url,
+        id: pull.id,
+        owner: pull.base.repo.owner.login,
+        repository: pull.base.repo.name,
+        state: pull.state,
+        openedDate: pull.created_at,
+        title: pull.title,
+        draft: pull.draft,
+        author: pull.user?.login ?? "unknown",
+        number: pull.number ?? Infinity,
+        link: pull.html_url,
         //true if at least two reviews are in the approved state
         approved:
           reviews.data.filter((review) => review.state === "APPROVED").length >=
@@ -145,7 +146,7 @@ export const checkPulls = async (reposIn: string[], number: number) => {
             user: review.user?.login ?? "unknown",
             state: review.state,
             photo: review.user?.avatar_url ?? "",
-            submittedAt: review.submitted_at ?? pulls[i].created_at,
+            submittedAt: review.submitted_at ?? pull.created_at,
           };
         }),
       });
