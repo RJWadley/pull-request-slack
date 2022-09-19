@@ -97,7 +97,7 @@ export const checkPulls = async (reposIn: string[], number = 1) => {
 
     if (isError || !newData?.data) return;
 
-    if (!firstRuns.includes(repos[i])) {
+    if (!firstRuns.includes(repos[i]) && number <= 1) {
       if (newData.headers.link?.includes("next")) {
         setTimeout(() => {
           checkPulls([repos[i]], number + 1);
