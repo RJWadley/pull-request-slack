@@ -240,6 +240,7 @@ export const checkPulls = async (repos: string[], number = 1) => {
             },
             style: pull.approved || pull.draft ? undefined : "primary",
             url: pull.link,
+            value: pull.number.toString(),
           },
         });
 

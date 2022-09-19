@@ -2,6 +2,7 @@ import { App } from "@slack/bolt";
 import dotenv from "dotenv";
 import fs from "fs";
 import { checkPulls } from "./checkPulls";
+import { getWebhooks } from "./api";
 
 dotenv.config();
 
@@ -37,6 +38,8 @@ if (!repos.every((item) => typeof item === "string")) {
   console.error("repos.json is not an array of strings");
   process.exit(1);
 }
+
+console.log(getWebhooks());
 
 (async () => {
   // Start your app
