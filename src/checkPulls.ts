@@ -79,32 +79,31 @@ export const checkPulls = async (repos: string[], number = 1) => {
   let newPulls = false;
   let isError = false;
 
-  for (let i = 0; i < repos.length; i++) {
+  for (const repo of repos) {
     let newData = await octokit
       .request(pullsQuery, {
-        owner: repos[i].split("/")[0],
-        repo: repos[i].split("/")[1],
-        state: firstRuns.includes(repos[i]) ? "open" : "all",
+        owner: repo.split("/")[0],
+        repo: repo.split("/")[1],
+        state: firstRuns.includes(repo) ? "open" : "all",
         per_page: 100,
         page: number,
       })
-      .catch(() => {
-        if (repos[i]) {
+      .catch((e) => {
+        if (repo) {
           isError = true;
-          console.error(`Error getting pull requests for ${repos[i]}`);
+          console.error(`Error getting pull requests for ${repo}: ${e}`);
         }
-        return;
       });
 
     if (isError || !newData?.data) return;
 
-    if (!firstRuns.includes(repos[i]) && number <= 4) {
+    if (!firstRuns.includes(repo) && number <= 4) {
       if (newData.headers.link?.includes("next")) {
         setTimeout(() => {
-          checkPulls([repos[i]], number + 1);
+          checkPulls([repo], number + 1);
         });
       } else {
-        firstRuns.push(repos[i]);
+        firstRuns.push(repo);
       }
     }
 
