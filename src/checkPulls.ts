@@ -70,7 +70,7 @@ export const checkPulls = async (repos: string[], number: number) => {
     firstRuns.length !== 0 &&
     number === 1
   ) {
-    console.log("first run, skipping checkPulls");
+    console.log("first run, skipping checkPulls: ", firstRuns);
     return;
   }
   console.log("CHECKING FOR NEW PULLS", JSON.stringify(repos), number);
@@ -89,10 +89,8 @@ export const checkPulls = async (repos: string[], number: number) => {
         page: number,
       })
       .catch((e) => {
-        if (repo) {
-          isError = true;
-          console.error(`Error getting pull requests for ${repo}: ${e}`);
-        }
+        isError = true;
+        console.error(`Error getting pull requests for ${repo}: ${e}`);
       });
 
     if (isError || !newData?.data) return;
