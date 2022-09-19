@@ -64,8 +64,7 @@ const reviewsQuery = "GET /repos/{owner}/{repo}/pulls/{pull_number}/reviews";
 let firstRuns: string[] = [];
 let firstBlockSend = true;
 
-export const checkPulls = async (reposIn: string[], number = 1) => {
-  const repos = reposIn.flatMap((r) => (r ? [r] : []));
+export const checkPulls = async (repos: string[], number = 1) => {
   if (
     firstRuns.length < repos.length &&
     firstRuns.length !== 0 &&
@@ -90,14 +89,16 @@ export const checkPulls = async (reposIn: string[], number = 1) => {
         page: number,
       })
       .catch(() => {
-        isError = true;
-        console.error(`Error getting pull requests for ${repos[i]}`);
+        if (repos[i]) {
+          isError = true;
+          console.error(`Error getting pull requests for ${repos[i]}`);
+        }
         return;
       });
 
     if (isError || !newData?.data) return;
 
-    if (!firstRuns.includes(repos[i]) && number <= 1) {
+    if (!firstRuns.includes(repos[i]) && number <= 4) {
       if (newData.headers.link?.includes("next")) {
         setTimeout(() => {
           checkPulls([repos[i]], number + 1);
