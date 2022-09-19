@@ -65,7 +65,7 @@ let firstRuns: string[] = [];
 let firstBlockSend = true;
 
 export const checkPulls = async (reposIn: string[], number: number) => {
-  const repos = [...reposIn];
+  const repos = [...reposIn] as const;
   if (
     firstRuns.length < repos.length &&
     firstRuns.length !== 0 &&
