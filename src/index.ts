@@ -1,6 +1,5 @@
 import { App } from "@slack/bolt";
 import dotenv from "dotenv";
-import fs from "fs";
 import { checkPulls } from "./checkPulls";
 
 dotenv.config();
