@@ -24,7 +24,14 @@ export const app = new App({
   signingSecret: SLACK_SIGNING_SECRET,
 });
 
-const repos: string[] = JSON.parse(fs.readFileSync("repos.json", "utf8"));
+const repos = [
+  "reformcollective/newform",
+  "reformcollective/galileo",
+  "HumeAI/hume-website",
+  "RREVentures/rre",
+  "reformcollective/reform-gatsby-starter",
+  "reformcollective/boost",
+] as const;
 
 //verify that repo is an array
 if (!Array.isArray(repos)) {
@@ -42,6 +49,6 @@ if (!repos.every((item) => typeof item === "string")) {
   // Start your app
   await app.start(process.env.PORT || 3000);
 
-  setInterval(() => checkPulls([...repos], 1), 1000 * 30);
-  checkPulls([...repos], 1);
+  setInterval(() => checkPulls(repos, 1), 1000 * 30);
+  checkPulls(repos, 1);
 })();

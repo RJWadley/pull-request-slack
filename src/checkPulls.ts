@@ -71,7 +71,7 @@ export const checkPulls = async (reposIn: string[], number: number) => {
     firstRuns.length !== 0 &&
     number === 1
   ) {
-    console.log("first run, skipping checkPulls: ", firstRuns);
+    console.log("first run, skipping checkPulls: ", reposIn, firstRuns);
     return;
   }
   console.log("CHECKING FOR NEW PULLS", JSON.stringify(repos), number);
