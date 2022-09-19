@@ -64,7 +64,8 @@ const reviewsQuery = "GET /repos/{owner}/{repo}/pulls/{pull_number}/reviews";
 let firstRuns: string[] = [];
 let firstBlockSend = true;
 
-export const checkPulls = async (repos: string[], number = 1) => {
+export const checkPulls = async (reposIn: string[], number = 1) => {
+  const repos = reposIn.flatMap((r) => (r ? [r] : []));
   if (
     firstRuns.length < repos.length &&
     firstRuns.length !== 0 &&
