@@ -41,6 +41,7 @@ export interface MappedPull {
   link: string;
   approved: boolean;
   openedDate: string;
+  checkState: "pending" | "passing" | "failing";
   reviews: MappedReview[];
 }
 
@@ -118,13 +119,46 @@ export const checkPulls = async (reposIn: string[], number: number) => {
         })
         .catch(() => {
           isError = true;
-          console.error(
-            `Error getting pull request for ${repo + pull.number}`
-          );
+          console.error(`Error getting pull request for ${repo + pull.number}`);
           return;
         });
 
       if (isError || !reviews?.data) return;
+
+      // determine if the branch is passing checks
+      // if not open, just return pending
+      let checkState: "pending" | "passing" | "failing" =
+        pull.state !== "open"
+          ? "pending"
+          : await octokit.checks
+              .listForRef({
+                owner: pull.base.repo.owner.login,
+                repo: pull.base.repo.name,
+                ref: pull.head.ref,
+              })
+              .then((res) => {
+                if (
+                  res.data.check_runs.every(
+                    (check) => check.conclusion === "success"
+                  )
+                ) {
+                  return "passing";
+                }
+                if (
+                  res.data.check_runs.some(
+                    (check) => check.conclusion === "failure"
+                  )
+                ) {
+                  return "failing";
+                }
+                return "pending";
+              })
+              .catch((e) => {
+                console.error(
+                  `Error getting checks for ${repo + pull.number}: ${e}`
+                );
+                return "failing";
+              });
 
       mappedData.push({
         id: pull.id,
@@ -137,6 +171,7 @@ export const checkPulls = async (reposIn: string[], number: number) => {
         author: pull.user?.login ?? "unknown",
         number: pull.number ?? Infinity,
         link: pull.html_url,
+        checkState,
         //true if at least two reviews are in the approved state
         approved:
           reviews.data.filter((review) => review.state === "APPROVED").length >=
@@ -228,7 +263,15 @@ export const checkPulls = async (reposIn: string[], number: number) => {
           type: "section",
           text: {
             type: "mrkdwn",
-            text: `${pull.draft ? "*[  DRAFT  ]*\t" : ""}*${pull.number}*\t${
+            text: `${
+              pull.draft
+                ? "🚧"
+                : pull.checkState === "passing"
+                ? "✅"
+                : pull.checkState === "failing"
+                ? "❌"
+                : "⏳"
+            } ${pull.draft ? "*[  DRAFT  ]*\t" : ""}*${pull.number}*\t${
               pull.title
             }`,
           },
