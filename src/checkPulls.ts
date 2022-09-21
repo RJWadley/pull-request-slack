@@ -117,9 +117,9 @@ export const checkPulls = async (reposIn: string[], number: number) => {
           repo: pull.base.repo.name,
           pull_number: pull.number,
         })
-        .catch(() => {
+        .catch((e) => {
           isError = true;
-          console.error(`Error getting pull request for ${repo + pull.number}`);
+          console.error(`Error getting pull request for ${repo + pull.number}:`, e ?? "");
           return;
         });
 
