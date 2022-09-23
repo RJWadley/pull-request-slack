@@ -65,6 +65,8 @@ const reviewsQuery = "GET /repos/{owner}/{repo}/pulls/{pull_number}/reviews";
 let firstRuns: string[] = [];
 let firstBlockSend = true;
 
+let tries = 0;
+
 export const checkPulls = async (reposIn: string[], number: number) => {
   const repos = [...reposIn] as const;
   if (
@@ -72,6 +74,11 @@ export const checkPulls = async (reposIn: string[], number: number) => {
     firstRuns.length !== 0 &&
     number === 1
   ) {
+    tries += 1;
+    if (tries > 30) {
+      console.log("Too many tries, exiting");
+      process.exit(1);
+    }
     console.log("first run, skipping checkPulls: ", reposIn, firstRuns);
     return;
   }
@@ -119,7 +126,10 @@ export const checkPulls = async (reposIn: string[], number: number) => {
         })
         .catch((e) => {
           isError = true;
-          console.error(`Error getting pull request for ${repo + pull.number}:`, e ?? "");
+          console.error(
+            `Error getting pull request for ${repo + pull.number}:`,
+            e ?? ""
+          );
           return;
         });
 
