@@ -112,7 +112,7 @@ export const checkPulls = async (reposIn: string[], number: number) => {
       if (newData.headers.link?.includes("next") && number <= 4) {
         setTimeout(() => {
           checkPulls([repo], number + 1);
-        }, 1000 * 20);
+        }, 1000 * 30 * number);
       } else {
         firstRuns.push(repo);
       }
