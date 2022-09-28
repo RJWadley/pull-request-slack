@@ -1,5 +1,4 @@
 import { LocalStorage } from "node-localstorage";
-import fs from "fs";
 import dotenv from "dotenv";
 import { MappedPull } from "./checkPulls";
 
@@ -25,9 +24,7 @@ let rawData = null; //localStorage.getItem("people");
  * key: github username
  * value: slack person id
  */
-let peopleMap: {
-  [key: string]: string;
-} = JSON.parse(fs.readFileSync("people.json", "utf8"));
+import peopleMap from "./people.json";
 
 /**
  * key: github username

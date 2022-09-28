@@ -1,4 +1,3 @@
-import fs from "fs";
 import { Octokit } from "@octokit/rest";
 import { KnownBlock } from "@slack/types";
 import { sendBlocks } from "./slack";
@@ -55,9 +54,14 @@ const octokit = new Octokit({
  * key: github username
  * value: slack person id
  */
-let peopleMap: {
-  [key: string]: string;
-} = JSON.parse(fs.readFileSync("people.json", "utf8"));
+import peopleMap from "./people.json";
+import slackEmojis from "./slackEmojis.json";
+
+type User = keyof typeof peopleMap;
+
+const isUser = (user: string): user is User => {
+  return user in peopleMap;
+};
 
 const pullsQuery = "GET /repos/{owner}/{repo}/pulls";
 const reviewsQuery = "GET /repos/{owner}/{repo}/pulls/{pull_number}/reviews";
@@ -273,7 +277,7 @@ export const checkPulls = async (reposIn: string[], number: number) => {
           type: "section",
           text: {
             type: "mrkdwn",
-            text: `${
+            text: `${isUser(pull.author) ? slackEmojis[pull.author] : ""}${
               pull.draft
                 ? "🚧"
                 : pull.checkState === "passing"
@@ -354,8 +358,8 @@ export const checkPulls = async (reposIn: string[], number: number) => {
 
   let belowAverageBy = userInfo.average - userInfo.worstUsersReviewCount;
   belowAverageBy = Math.round(belowAverageBy * 1000) / 1000;
-  let worstUserIds = userInfo.worstUsers.map(
-    (user) => `<@${peopleMap[user]}> (${user})`
+  let worstUserIds = userInfo.worstUsers.map((user) =>
+    isUser(user) ? `<@${peopleMap[user]}> (${user})` : ""
   );
 
   let aboveAverageBy = userInfo.bestUsersReviewCount - userInfo.average;
