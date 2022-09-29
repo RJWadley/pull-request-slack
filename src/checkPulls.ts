@@ -102,6 +102,18 @@ export const checkPulls = async (reposIn: string[], number: number) => {
         page: number,
       })
       .catch((e) => {
+        // check for rate limit
+        if (e.status === 403) {
+          console.log(
+            "rate limit hit, trying again in ",
+            e.headers["retry-after"]
+          );
+          // try again after requested delay
+          setTimeout(() => {
+            checkPulls([...repos], number);
+          }, e.headers["retry-after"] * 1500 - Date.now());
+        }
+
         isError = true;
         console.error(`Error getting pull requests for ${repo}: ${e}`);
       });
@@ -112,7 +124,7 @@ export const checkPulls = async (reposIn: string[], number: number) => {
       if (newData.headers.link?.includes("next") && number <= 4) {
         setTimeout(() => {
           checkPulls([repo], number + 1);
-        }, 1000 * 30 * number);
+        }, 1000);
       } else {
         firstRuns.push(repo);
       }
@@ -129,6 +141,18 @@ export const checkPulls = async (reposIn: string[], number: number) => {
           pull_number: pull.number,
         })
         .catch((e) => {
+          // check for rate limit
+          if (e.status === 403) {
+            console.log(
+              "rate limit hit, trying again in ",
+              e.headers["retry-after"]
+            );
+            // try again after requested delay
+            setTimeout(() => {
+              checkPulls([...repos], number);
+            }, e.headers["retry-after"] * 1500 - Date.now());
+          }
+
           isError = true;
           console.error(
             `Error getting pull request for ${repo + pull.number}:`,
@@ -277,7 +301,7 @@ export const checkPulls = async (reposIn: string[], number: number) => {
           type: "section",
           text: {
             type: "mrkdwn",
-            text: `${isUser(pull.author) ? slackEmojis[pull.author] : ""}${
+            text: `${isUser(pull.author) ? slackEmojis[pull.author] : ""} ${
               pull.draft
                 ? "🚧"
                 : pull.checkState === "passing"
