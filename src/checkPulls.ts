@@ -71,13 +71,9 @@ let firstBlockSend = true;
 
 let tries = 0;
 
-export const checkPulls = async (reposIn: string[], number: number) => {
+export const checkPulls = async (reposIn: string[]) => {
   const repos = [...reposIn] as const;
-  if (
-    firstRuns.length < repos.length &&
-    firstRuns.length !== 0 &&
-    number === 1
-  ) {
+  if (firstRuns.length < repos.length && firstRuns.length !== 0) {
     tries += 1;
     if (tries > 30) {
       console.log("Too many tries, exiting");
@@ -86,7 +82,7 @@ export const checkPulls = async (reposIn: string[], number: number) => {
     console.log("first run, skipping checkPulls: ", reposIn, firstRuns);
     return;
   }
-  console.log("CHECKING FOR NEW PULLS", JSON.stringify(repos), number);
+  console.log("CHECKING FOR NEW PULLS", JSON.stringify(repos));
 
   let mappedData: MappedPull[] = [];
   let newPulls = false;
@@ -99,21 +95,8 @@ export const checkPulls = async (reposIn: string[], number: number) => {
         repo: repo.split("/")[1],
         state: firstRuns.includes(repo) ? "open" : "all",
         per_page: 100,
-        page: number,
       })
       .catch((e) => {
-        // check for rate limit
-        if (e.status === 403) {
-          console.log(
-            "rate limit hit, trying again in ",
-            e.headers["retry-after"]
-          );
-          // try again after requested delay
-          setTimeout(() => {
-            checkPulls([...repos], number);
-          }, e.headers["retry-after"] * 1500 - Date.now());
-        }
-
         isError = true;
         console.error(`Error getting pull requests for ${repo}: ${e}`);
       });
@@ -121,13 +104,7 @@ export const checkPulls = async (reposIn: string[], number: number) => {
     if (isError || !newData?.data) return;
 
     if (!firstRuns.includes(repo)) {
-      if (newData.headers.link?.includes("next") && number <= 4) {
-        setTimeout(() => {
-          checkPulls([repo], number + 1);
-        }, 1000);
-      } else {
-        firstRuns.push(repo);
-      }
+      firstRuns.push(repo);
     }
 
     //make sure is array
@@ -141,18 +118,6 @@ export const checkPulls = async (reposIn: string[], number: number) => {
           pull_number: pull.number,
         })
         .catch((e) => {
-          // check for rate limit
-          if (e.status === 403) {
-            console.log(
-              "rate limit hit, trying again in ",
-              e.headers["retry-after"]
-            );
-            // try again after requested delay
-            setTimeout(() => {
-              checkPulls([...repos], number);
-            }, e.headers["retry-after"] * 1500 - Date.now());
-          }
-
           isError = true;
           console.error(
             `Error getting pull request for ${repo + pull.number}:`,
@@ -411,7 +376,7 @@ export const checkPulls = async (reposIn: string[], number: number) => {
     else sendBlocks(blocks, newPulls);
 
   child.exec("git fetch && git pull");
-  console.log("CHECK COMPLETE :D", JSON.stringify(repos), number);
+  console.log("CHECK COMPLETE :D", JSON.stringify(repos));
 };
 
 /**
