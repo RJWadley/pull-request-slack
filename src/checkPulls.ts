@@ -83,6 +83,7 @@ export const checkPulls = async (reposIn: string[]) => {
     return;
   }
   console.log("CHECKING FOR NEW PULLS", JSON.stringify(repos));
+  tries = 0;
 
   let mappedData: MappedPull[] = [];
   let newPulls = false;
