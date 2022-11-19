@@ -164,31 +164,36 @@ export const checkPulls = async (reposIn: string[]) => {
                 return "failing";
               });
 
-      mappedData.push({
-        id: pull.id,
-        owner: pull.base.repo.owner.login,
-        repository: pull.base.repo.name,
-        state: pull.state,
-        openedDate: pull.created_at,
-        title: pull.title,
-        draft: pull.draft,
-        author: pull.user?.login ?? "unknown",
-        number: pull.number ?? Infinity,
-        link: pull.html_url,
-        checkState,
-        //true if at least two reviews are in the approved state
-        approved:
-          reviews.data.filter((review) => review.state === "APPROVED").length >=
-          2,
-        reviews: reviews.data.map((review) => {
-          return {
-            user: review.user?.login ?? "unknown",
-            state: review.state,
-            photo: review.user?.avatar_url ?? "",
-            submittedAt: review.submitted_at ?? pull.created_at,
-          };
-        }),
-      });
+      // check if the pull has the "on hold" label
+      let onHold = pull.labels.some(
+        (label) => label.name.toLowerCase() === "on hold"
+      );
+      if (!onHold)
+        mappedData.push({
+          id: pull.id,
+          owner: pull.base.repo.owner.login,
+          repository: pull.base.repo.name,
+          state: pull.state,
+          openedDate: pull.created_at,
+          title: pull.title,
+          draft: pull.draft,
+          author: pull.user?.login ?? "unknown",
+          number: pull.number ?? Infinity,
+          link: pull.html_url,
+          checkState,
+          //true if at least two reviews are in the approved state
+          approved:
+            reviews.data.filter((review) => review.state === "APPROVED")
+              .length >= 2,
+          reviews: reviews.data.map((review) => {
+            return {
+              user: review.user?.login ?? "unknown",
+              state: review.state,
+              photo: review.user?.avatar_url ?? "",
+              submittedAt: review.submitted_at ?? pull.created_at,
+            };
+          }),
+        });
     }
   }
 
