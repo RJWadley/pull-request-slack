@@ -80,34 +80,6 @@ export const trackPulls = (pull: MappedPull) => {
 };
 
 export const getLeaderBoard = (availablePulls: Record<string, number>) => {
-  //return the user with the fewest reviews
-  let worstUser = [""];
-  let worstUserCount = Infinity;
-  let bestUser = [""];
-  let bestUserCount = 0;
-
-  for (let key in peopleData) {
-    if (availablePulls[key] && availablePulls[key] > 0) {
-      if (peopleData[key].length < worstUserCount) {
-        worstUser = [key];
-        worstUserCount = peopleData[key].length;
-      }
-      if (peopleData[key].length > bestUserCount) {
-        bestUser = [key];
-        bestUserCount = peopleData[key].length;
-      }
-      if (
-        peopleData[key].length === worstUserCount &&
-        !worstUser.includes(key)
-      ) {
-        worstUser.push(key);
-      }
-      if (peopleData[key].length === bestUserCount && !bestUser.includes(key)) {
-        bestUser.push(key);
-      }
-    }
-  }
-
   let averageNumberOfReviews = 0;
   for (let user in peopleData) {
     averageNumberOfReviews += peopleData[user].length;
@@ -126,11 +98,22 @@ export const getLeaderBoard = (availablePulls: Record<string, number>) => {
     });
   }
 
+  const worstUser = leaderBoard[leaderBoard.length - 1];
+  const worstUserReviewCount = worstUser.count;
+  const allWorstUsers = leaderBoard.filter(
+    (user) => user.count === worstUserReviewCount
+  );
+  const bestUser = leaderBoard[0];
+  const bestUserReviewCount = bestUser.count;
+  const allBestUsers = leaderBoard.filter(
+    (user) => user.count === bestUserReviewCount
+  );
+
   return {
-    worstUsers: worstUser,
-    worstUsersReviewCount: worstUserCount,
-    bestUsers: bestUser,
-    bestUsersReviewCount: bestUserCount,
+    worstUsers: allWorstUsers.map((x) => x.name),
+    worstUsersReviewCount: worstUserReviewCount,
+    bestUsers: allBestUsers.map((x) => x.name),
+    bestUsersReviewCount: bestUserReviewCount,
     average: averageNumberOfReviews,
     ranking: leaderBoard,
   };
