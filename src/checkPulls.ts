@@ -207,10 +207,16 @@ export const checkPulls = async (reposIn: string[]) => {
 
     let pulls = mappedData.filter((pull) => pull.repository === repoName);
     let dependabotPulls = pulls.filter(
-      (pull) => pull.author === "dependabot[bot]" && pull.state === "open"
+      (pull) =>
+        (pull.author === "dependabot[bot]" ||
+          pull.title !== "Combined Package Updates") &&
+        pull.state === "open"
     );
     let openUserPulls = pulls.filter(
-      (pull) => pull.author !== "dependabot[bot]" && pull.state === "open"
+      (pull) =>
+        pull.author !== "dependabot[bot]" &&
+        pull.title !== "Combined Package Updates" &&
+        pull.state === "open"
     );
     let recentUserPulls = pulls.filter(
       (pull) =>
