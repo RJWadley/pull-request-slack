@@ -45,8 +45,11 @@ const savePeopleData = () => {
 };
 
 export const trackPulls = (pull: MappedPull) => {
-  // give a point to the owner of the pull request
-  peopleData[pull.owner] = [...(peopleData[pull.owner] || []), pull.id];
+  // give a point to the author of the pull request
+  if (Object.keys(peopleMap).includes(pull.author)) {
+    peopleData[pull.author] = peopleData[pull.author] || [];
+    peopleData[pull.author].push(pull.id);
+  }
 
   pull.reviews.forEach((review) => {
     if (Object.keys(peopleMap).includes(review.user)) {
