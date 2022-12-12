@@ -46,11 +46,11 @@ const savePeopleData = () => {
 
 export const trackPulls = (pull: MappedPull) => {
   // give a point to the author of the pull request
-  if (Object.keys(peopleMap).includes(pull.author)) {
-    peopleData[pull.author] = peopleData[pull.author] || [];
-    if (!peopleData[pull.author].includes(pull.id))
-      peopleData[pull.author].push(pull.id);
-  }
+  // if (Object.keys(peopleMap).includes(pull.author)) {
+  //   peopleData[pull.author] = peopleData[pull.author] || [];
+  //   if (!peopleData[pull.author].includes(pull.id))
+  //     peopleData[pull.author].push(pull.id);
+  // }
 
   pull.reviews.forEach((review) => {
     if (Object.keys(peopleMap).includes(review.user)) {
