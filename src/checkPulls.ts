@@ -359,9 +359,7 @@ export const checkPulls = async (reposIn: string[]) => {
 
   let belowAverageBy = userInfo.average - userInfo.worstUsersReviewCount;
   belowAverageBy = Math.round(belowAverageBy * 1000) / 1000;
-  let worstUserIds = userInfo.worstUsers.map((user) =>
-    isUser(user) ? `<@${peopleMap[user]}> (${user})` : ""
-  );
+  let worstUserIds = userInfo.worstUsers;
 
   let aboveAverageBy = userInfo.bestUsersReviewCount - userInfo.average;
   aboveAverageBy = Math.round(aboveAverageBy * 1000) / 1000;
