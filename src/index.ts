@@ -29,7 +29,6 @@ const repos = [
   "HumeAI/hume-website",
   "RREVentures/rre",
   "reformcollective/reform-gatsby-starter",
-  "reformcollective/boost",
   "reformcollective/reform_3.0",
   "reformcollective/kickoff",
   "reformcollective/library",
