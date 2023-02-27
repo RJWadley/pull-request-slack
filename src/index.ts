@@ -24,10 +24,8 @@ export const app = new App({
 });
 
 const repos = [
-  "reformcollective/newform",
   "reformcollective/galileo",
   "HumeAI/hume-website",
-  "RREVentures/rre",
   "reformcollective/reform-gatsby-starter",
   "reformcollective/reform_3.0",
   "reformcollective/kickoff",
