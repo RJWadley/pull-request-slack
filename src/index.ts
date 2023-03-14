@@ -31,6 +31,7 @@ const repos = [
   "reformcollective/kickoff",
   "reformcollective/library",
   "reformcollective/fluid",
+  "reformcollective/Runway_V2"
 ] as const;
 
 //verify that repo is an array
