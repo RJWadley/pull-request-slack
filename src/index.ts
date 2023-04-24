@@ -24,13 +24,9 @@ export const app = new App({
 });
 
 const repos = [
-  "reformcollective/galileo",
   "HumeAI/hume-website",
   "reformcollective/reform-gatsby-starter",
-  "reformcollective/reform_3.0",
-  "reformcollective/kickoff",
   "reformcollective/library",
-  "reformcollective/fluid",
   "reformcollective/Runway_V2"
 ] as const;
 
