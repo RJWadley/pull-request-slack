@@ -27,7 +27,8 @@ const repos = [
   "HumeAI/hume-website",
   "reformcollective/reform-gatsby-starter",
   "reformcollective/library",
-  "reformcollective/Runway_V2"
+  "reformcollective/Runway_V2",
+  "reformcollective/metagarage",
 ] as const;
 
 //verify that repo is an array
