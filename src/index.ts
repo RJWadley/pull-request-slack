@@ -28,6 +28,7 @@ const repos = [
   "reformcollective/reform-gatsby-starter",
   "reformcollective/library",
   "reformcollective/Runway_V2",
+  "reformcollective/ZZ",
   "reformcollective/metagarage",
 ] as const;
 
