@@ -28,8 +28,8 @@ const repos = [
   "reformcollective/reform-gatsby-starter",
   "reformcollective/library",
   "reformcollective/Runway_V2",
-  "reformcollective/ZZ",
   "reformcollective/metagarage",
+  "reformcollective/ZZ",
 ] as const;
 
 //verify that repo is an array
