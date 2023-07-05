@@ -24,12 +24,11 @@ export const app = new App({
 });
 
 const repos = [
-  "HumeAI/hume-website",
   "reformcollective/reform-gatsby-starter",
   "reformcollective/library",
   "reformcollective/Runway_V2",
   "reformcollective/metagarage",
-  "reformcollective/ZZ",
+  "reformcollective/legwork"
 ] as const;
 
 //verify that repo is an array
