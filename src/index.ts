@@ -24,7 +24,7 @@ export const app = new App({
 });
 
 const repos = [
-  "HumeAI/hume-website",
+  // "HumeAI/hume-website",
   "reformcollective/reform-gatsby-starter",
   "reformcollective/library",
   "reformcollective/Runway_V2",
