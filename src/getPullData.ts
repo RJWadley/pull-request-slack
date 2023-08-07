@@ -112,7 +112,7 @@ export const getPullData = async (): Promise<MappedPull[]> => {
       const thirtyDaysAgo = new Date();
       thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
       const pullCreatedAt = new Date(pull.created_at);
-      if (pullCreatedAt < thirtyDaysAgo) {
+      if (pullCreatedAt < thirtyDaysAgo && pull.state !== "open") {
         continue;
       }
 
