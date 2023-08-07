@@ -1,6 +1,6 @@
 import { Octokit } from "@octokit/rest";
 import { KnownBlock } from "@slack/types";
-import { sendBlocks } from "./slack";
+import { sendMessage } from "../sendMessage";
 import dotenv from "dotenv";
 import { getLeaderBoard, trackPulls } from "./trackPeople";
 import * as child from "child_process";
@@ -197,7 +197,7 @@ export const checkPulls = async (reposIn: string[]) => {
     }
   }
 
-  let blocks: KnownBlock[] = [];
+  let blocks2: KnownBlock[] = [];
   let allPullsApproved = true;
 
   let availablePulls: Record<string, number> = {};
@@ -383,7 +383,7 @@ export const checkPulls = async (reposIn: string[]) => {
 
   if (firstRuns.length === repos.length)
     if (firstBlockSend) firstBlockSend = false;
-    else sendBlocks(blocks, newPulls);
+    else sendMessage(blocks, newPulls);
 
   child.exec("git fetch && git pull");
   console.log("CHECK COMPLETE :D", JSON.stringify(repos));

@@ -1,53 +1,26 @@
-import { App } from "@slack/bolt";
-import dotenv from "dotenv";
-import { checkPulls } from "./checkPulls";
+import { env } from "./env";
+import { getBuildStatus } from "./getBuildStatus";
+import { getPullData } from "./getPullData";
+import { makeCompactBlocks } from "./makeCompactBlocks";
+import { makeDevBlocks } from "./makeDevBlocks";
+import { sendMessage } from "./sendMessage";
 
-dotenv.config();
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-let SLACK_SIGNING_SECRET: string = process.env.SLACK_SIGNING_SECRET as string;
-let SLACK_BOT_TOKEN: string = process.env.SLACK_BOT_TOKEN as string;
-let GITHUB_TOKEN: string = process.env.GITHUB_TOKEN as string;
-let SLACK_CHANNEL_ID: string = process.env.SLACK_CHANNEL_ID as string;
-if (
-  !SLACK_SIGNING_SECRET ||
-  !SLACK_BOT_TOKEN ||
-  !GITHUB_TOKEN ||
-  !SLACK_CHANNEL_ID
-) {
-  console.error("Missing environment variables");
-  process.exit(1);
-}
+const loop = async () => {
+  console.log("getting updated data")
+  const pulls = await getPullData();
 
-export const app = new App({
-  token: SLACK_BOT_TOKEN,
-  signingSecret: SLACK_SIGNING_SECRET,
-});
+  const devBlocks = makeDevBlocks(pulls);
+  await sendMessage(env.DEV_CHANNEL_ID, devBlocks, false);
 
-const repos = [
-  "HumeAI/hume-website",
-  "reformcollective/reform-gatsby-starter",
-  "reformcollective/library",
-  "reformcollective/Runway_V2",
-  "reformcollective/metagarage",
-  "reformcollective/legwork",
-] as const;
+  const compactBlocks = await makeCompactBlocks(pulls);
+  await sendMessage(env.COMPACT_CHANNEL_ID, compactBlocks, false);
 
-//verify that repo is an array
-if (!Array.isArray(repos)) {
-  console.error("repos.json is not an array");
-  process.exit(1);
-}
+  await sleep(1000 * 60);
 
-//verify that each repo is a string
-if (!repos.every((item) => typeof item === "string")) {
-  console.error("repos.json is not an array of strings");
-  process.exit(1);
-}
+  loop();
+};
 
-(async () => {
-  // Start your app
-  await app.start(process.env.PORT || 3000);
-
-  setInterval(() => checkPulls(repos), 1000 * 60);
-  checkPulls(repos);
-})();
+loop()
+;
