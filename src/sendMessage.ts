@@ -63,7 +63,7 @@ const updateMessage = async (
     return publishMessage(channelId, blocks);
   }
 
-  const result = await app.client.chat.update({
+  await app.client.chat.update({
     token: env.SLACK_BOT_TOKEN,
     channel: channelId,
     ts: previousId,

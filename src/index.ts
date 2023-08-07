@@ -1,5 +1,5 @@
+import { exec } from "node:child_process";
 import { env } from "./env";
-import { getBuildStatus } from "./getBuildStatus";
 import { getPullData } from "./getPullData";
 import { makeCompactBlocks } from "./makeCompactBlocks";
 import { makeDevBlocks } from "./makeDevBlocks";
@@ -8,7 +8,7 @@ import { sendMessage } from "./sendMessage";
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const loop = async () => {
-  console.log("getting updated data")
+  console.log("getting updated data");
   const pulls = await getPullData();
 
   const devBlocks = makeDevBlocks(pulls);
@@ -19,8 +19,9 @@ const loop = async () => {
 
   await sleep(1000 * 60);
 
+  exec("git fetch && git pull");
+
   loop();
 };
 
-loop()
-;
+loop();

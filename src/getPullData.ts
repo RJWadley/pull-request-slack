@@ -1,6 +1,4 @@
-import { RequestInterface } from "@octokit/types";
 import repositories from "./data/repositories.json";
-import slackEmojis from "./data/slackEmojis.json";
 
 import { Octokit } from "@octokit/rest";
 import { env } from "./env";
