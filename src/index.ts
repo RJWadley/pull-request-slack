@@ -7,24 +7,27 @@ import { sendMessage } from "./sendMessage";
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-const loop = async () => {
-  // send a new message in the middle of the night when everybody has notifications off
-  const withinOneMinuteOfMidnight =
-    new Date().getHours() === 23 && new Date().getMinutes() >= 58;
+let dateOfMostRecentPull = new Date();
 
+const loop = async () => {
   try {
     console.log("getting updated data");
     const pulls = await getPullData();
 
+    let hasNewPull = false;
+    for (const pull of pulls) {
+      const pullCreatedAt = new Date(pull.openedAt);
+      if (pullCreatedAt > dateOfMostRecentPull) {
+        hasNewPull = true;
+        dateOfMostRecentPull = pullCreatedAt;
+      }
+    }
+
     const devBlocks = makeDevBlocks(pulls);
-    await sendMessage(env.DEV_CHANNEL_ID, devBlocks, withinOneMinuteOfMidnight);
+    await sendMessage(env.DEV_CHANNEL_ID, devBlocks, hasNewPull);
 
     const compactBlocks = await makeCompactBlocks(pulls);
-    await sendMessage(
-      env.COMPACT_CHANNEL_ID,
-      compactBlocks,
-      withinOneMinuteOfMidnight
-    );
+    await sendMessage(env.COMPACT_CHANNEL_ID, compactBlocks, hasNewPull);
   } catch (e) {
     console.error(e);
   }
