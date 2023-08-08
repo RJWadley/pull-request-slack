@@ -23,7 +23,13 @@ const isWithinLast12Hours = (dateString: string | null): boolean => {
   return diffInHours <= 12;
 };
 
-export const makeCompactBlocks = async (pulls: MappedPull[]) => {
+const irrelevantRepositories = ["library", "reform-gatsby-starter"];
+
+export const makeCompactBlocks = async (pullsIn: MappedPull[]) => {
+  const pulls = pullsIn.filter(
+    (pull) => !irrelevantRepositories.includes(pull.repository)
+  );
+
   const blocks: KnownBlock[] = [];
 
   const repoNames = pulls
