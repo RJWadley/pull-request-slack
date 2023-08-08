@@ -25,12 +25,7 @@ export const sendMessage = async (
   started = true;
   if (notify)
     recentMessages[channelID] = await publishMessage(channelID, blocks);
-  else
-    recentMessages[channelID] = await updateMessage(
-      channelID,
-      blocks,
-      recentMessages[channelID]
-    );
+  else recentMessages[channelID] = await updateMessage(channelID, blocks);
 };
 
 const publishMessage = async (channelId: string, blocks: KnownBlock[]) => {
@@ -54,14 +49,22 @@ const publishMessage = async (channelId: string, blocks: KnownBlock[]) => {
   return previousMessageId;
 };
 
-const updateMessage = async (
-  channelId: string,
-  blocks: KnownBlock[],
-  previousId: string | undefined
-) => {
+const updateMessage = async (channelId: string, blocks: KnownBlock[]) => {
+  let previousId = recentMessages[channelId];
+
   if (!previousId) {
-    return publishMessage(channelId, blocks);
+    //get all messages sent by the bot
+    const messages = await app.client.conversations.history({
+      token: env.SLACK_BOT_TOKEN,
+      channel: channelId,
+    });
+
+    // save the ts of the most recent message
+    const previousMessage = messages.messages?.[0];
+    previousId = previousMessage?.ts;
   }
+
+  if (!previousId) return publishMessage(channelId, blocks);
 
   await app.client.chat.update({
     token: env.SLACK_BOT_TOKEN,
