@@ -108,7 +108,10 @@ const getMessageTS = async (channelId: string) => {
     });
 
     // save the ts of the most recent message
-    const previousMessage = messages.messages?.[0];
+    const previousMessage = messages.messages?.find(
+      (message) =>
+        message.bot_id && message.bot_id === "B03K1Q5GA91" && message.ts
+    );
     previousId = previousMessage?.ts;
   }
 
