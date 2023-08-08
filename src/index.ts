@@ -4,10 +4,13 @@ import { getPullData } from "./getPullData";
 import { makeCompactBlocks } from "./makeCompactBlocks";
 import { makeDevBlocks } from "./makeDevBlocks";
 import { sendMessage } from "./sendMessage";
+import { promisify } from "node:util";
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 let dateOfMostRecentPull = new Date();
+
+const execPromise = promisify(exec);
 
 const loop = async () => {
   try {
@@ -33,7 +36,7 @@ const loop = async () => {
 
   await sleep(1000 * 60);
 
-  exec("git fetch && git pull");
+  await execPromise("git fetch && git pull");
 
   loop();
 };
