@@ -45,7 +45,9 @@ export const makeDevBlocks = (pulls: MappedPull[]) => {
         type: "section",
         text: {
           type: "mrkdwn",
-          text: `${openUserPulls.length}\tUser Pulls \n ${dependabotPulls.length}\tDependabot Pulls`,
+          text: `${openUserPulls.length}\tPull Request${
+            openUserPulls.length === 1 ? "" : "s"
+          }`,
         },
         accessory: {
           type: "button",
