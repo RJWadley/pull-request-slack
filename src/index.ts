@@ -11,7 +11,6 @@ let dateOfMostRecentPull = new Date();
 
 const loop = async () => {
   try {
-    console.log("getting updated data");
     const pulls = await getPullData();
 
     let hasNewPull = false;
