@@ -28,7 +28,10 @@ const irrelevantRepositories = ["library", "reform-gatsby-starter"];
 export const makeCompactBlocks = async (pullsIn: MappedPull[]) => {
   const pulls = pullsIn.filter(
     (pull) => !irrelevantRepositories.includes(pull.repository)
-  );
+  ).filter(
+    // only include pulls into the main branch
+    (pull) => pull.baseBranch === "main"
+  )
 
   const blocks: KnownBlock[] = [];
 

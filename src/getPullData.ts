@@ -79,6 +79,10 @@ export interface MappedPull {
    * Is this pull request on hold?
    */
   onHold: boolean;
+  /**
+   * name of the branch this pull request is mergin into
+   */
+  baseBranch: string;
 }
 
 const octokit = new Octokit({
@@ -206,6 +210,7 @@ export const getPullData = async (): Promise<MappedPull[]> => {
               };
             })
           : [],
+        baseBranch: pull.base.ref,
       });
     }
   }
