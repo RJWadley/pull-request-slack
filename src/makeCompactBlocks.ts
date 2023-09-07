@@ -26,12 +26,13 @@ const isWithinLast12Hours = (dateString: string | null): boolean => {
 const irrelevantRepositories = ["library", "reform-gatsby-starter"];
 
 export const makeCompactBlocks = async (pullsIn: MappedPull[]) => {
-  const pulls = pullsIn.filter(
-    (pull) => !irrelevantRepositories.includes(pull.repository)
-  ).filter(
+  const pulls = pullsIn
+    // only include repos the design team cares about
+    .filter((pull) => !irrelevantRepositories.includes(pull.repository))
     // only include pulls into the main branch
-    (pull) => pull.baseBranch === "main"
-  )
+    .filter((pull) => pull.baseBranch === "main")
+    // only include pull that aren't on hold
+    .filter((pull) => !pull.onHold);
 
   const blocks: KnownBlock[] = [];
 
