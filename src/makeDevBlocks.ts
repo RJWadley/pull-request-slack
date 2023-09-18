@@ -11,18 +11,15 @@ const isUser = (user: string): user is User => {
 
 export const makeDevBlocks = (pulls: MappedPull[]) => {
   const blocks: KnownBlock[] = [];
-  const currentPulls = pulls.filter(
-    (pull) =>
-      pull.author !== "dependabot[bot]" &&
-      pull.title !== "Combined Package Updates" &&
-      pull.state === "open"
-  );
-  const dependabotPulls = pulls.filter(
-    (pull) =>
-      (pull.author === "dependabot[bot]" ||
-        pull.title !== "Combined Package Updates") &&
-      pull.state === "open"
-  );
+  const currentPulls = pulls
+    .filter(
+      (pull) =>
+        pull.author !== "dependabot[bot]" &&
+        pull.title !== "Combined Package Updates" &&
+        pull.state === "open"
+    )
+    // only include pull that aren't on hold
+    .filter((pull) => !pull.onHold);
 
   const repoNames = currentPulls
     .map((pull) => pull.repository)
