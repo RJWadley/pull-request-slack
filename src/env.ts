@@ -11,4 +11,6 @@ export const env = {
   DEV_CHANNEL_ID: process.env.DEV_CHANNEL_ID ?? "missing environment variable",
   COMPACT_CHANNEL_ID:
     process.env.COMPACT_CHANNEL_ID ?? "missing environment variable",
+  LEGWORK_CHANNEL_ID:
+    process.env.LEGWORK_CHANNEL_ID ?? "missing environment variable",
 };
