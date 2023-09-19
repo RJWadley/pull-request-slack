@@ -27,13 +27,15 @@ export const sendMessage = async (
   // only send a new message if the message to update isn't the most recent message
   if (notify) {
     const previousId = await getMessageTS(channelID);
-    const mostRecentMessage = await app.client.conversations.history({
+    const mostRecentMessages = await app.client.conversations.history({
       token: env.SLACK_BOT_TOKEN,
       channel: channelID,
-      limit: 1,
+      limit: 10,
     });
-    const mostRecentMessageId = mostRecentMessage.messages?.[0]?.ts;
-    if (previousId !== mostRecentMessageId) {
+    const isWithinMostRecent = mostRecentMessages.messages?.some(
+      (message) => message.ts === previousId
+    );
+    if (!isWithinMostRecent) {
       recentMessages[channelID] = await publishMessage(channelID, blocks);
       return;
     }
