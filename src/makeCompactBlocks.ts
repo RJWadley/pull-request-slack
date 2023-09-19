@@ -14,13 +14,12 @@ const isRepoName = (repo: string): repo is RepoName => {
   return repo in repoSlackEmojis;
 };
 
-const isWithinLast12Hours = (dateString: string | null): boolean => {
+const isRecent = (dateString: string | null): boolean => {
   if (!dateString) return false;
   const date = new Date(dateString);
   const now = new Date();
-  const diffInMs = now.getTime() - date.getTime();
-  const diffInHours = diffInMs / (1000 * 60 * 60);
-  return diffInHours <= 12;
+  // is within last week
+  return now.getTime() - date.getTime() < 1000 * 60 * 60 * 24 * 7
 };
 
 const irrelevantRepositories = ["library", "reform-gatsby-starter"];
@@ -63,7 +62,7 @@ export const makeCompactBlocks = async (pullsIn: MappedPull[]) => {
       pull.author !== "dependabot[bot]" &&
       pull.title !== "Combined Package Updates" &&
       pull.mergedAt &&
-      isWithinLast12Hours(pull.mergedAt)
+      isRecent(pull.mergedAt)
   );
 
   /**
