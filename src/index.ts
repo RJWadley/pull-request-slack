@@ -38,6 +38,7 @@ const loop = async () => {
     await sendMessage(env.COMPACT_CHANNEL_ID, compactBlocks, hasNewPull);
   } catch (e) {
     console.error(e);
+    console.log("Current time is", new Date().toLocaleString());
   }
 
   await sleep(1000 * 60);
