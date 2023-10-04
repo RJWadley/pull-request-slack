@@ -19,7 +19,7 @@ const isRecent = (dateString: string | null): boolean => {
   const date = new Date(dateString);
   const now = new Date();
   // is within last week
-  return now.getTime() - date.getTime() < 1000 * 60 * 60 * 24 * 7
+  return now.getTime() - date.getTime() < 1000 * 60 * 60 * 24 * 7;
 };
 
 const irrelevantRepositories = ["library", "reform-gatsby-starter"];
@@ -57,13 +57,22 @@ export const makeCompactBlocks = async (pullsIn: MappedPull[]) => {
   /**
    * pulls closed within the last 12 hours
    */
-  const recentlyMergedPulls = pulls.filter(
-    (pull) =>
-      pull.author !== "dependabot[bot]" &&
-      pull.title !== "Combined Package Updates" &&
-      pull.mergedAt &&
-      isRecent(pull.mergedAt)
-  );
+  const recentlyMergedPulls = pulls
+    .filter(
+      (pull) =>
+        pull.author !== "dependabot[bot]" &&
+        pull.title !== "Combined Package Updates" &&
+        pull.mergedAt &&
+        isRecent(pull.mergedAt)
+    )
+    // most recent first
+    .sort((a, b) => {
+      if (!a.mergedAt) return 1;
+      if (!b.mergedAt) return -1;
+      if (new Date(a.mergedAt) > new Date(b.mergedAt)) return -1;
+      if (new Date(a.mergedAt) < new Date(b.mergedAt)) return 1;
+      return 0;
+    });
 
   /**
    *
