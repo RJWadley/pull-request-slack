@@ -26,16 +26,28 @@ const loop = async () => {
     }
 
     const devBlocks = makeDevBlocks(pulls);
-    await sendMessage(env.DEV_CHANNEL_ID, devBlocks, hasNewPull);
+    await sendMessage(
+      env.DEV_CHANNEL_ID,
+      devBlocks,
+      hasNewPull ? "notify" : "update"
+    );
 
     const legworkPulls = pulls.filter((p) => p.repository === "legwork");
     const nonLegworkPulls = pulls.filter((p) => p.repository !== "legwork");
 
     const legwork = await makeCompactBlocks(legworkPulls);
-    await sendMessage(env.LEGWORK_CHANNEL_ID, legwork, hasNewPull);
+    await sendMessage(
+      env.LEGWORK_CHANNEL_ID,
+      legwork,
+      hasNewPull ? "update" : "silent"
+    );
 
     const compactBlocks = await makeCompactBlocks(nonLegworkPulls);
-    await sendMessage(env.COMPACT_CHANNEL_ID, compactBlocks, hasNewPull);
+    await sendMessage(
+      env.COMPACT_CHANNEL_ID,
+      compactBlocks,
+      hasNewPull ? "update" : "silent"
+    );
   } catch (e) {
     console.error(e);
     console.log("Current time is", new Date().toLocaleString());

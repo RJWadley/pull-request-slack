@@ -19,13 +19,23 @@ let recentMessages: { [key: string]: string | undefined } = {};
 export const sendMessage = async (
   channelID: string,
   blocks: KnownBlock[],
-  notify: boolean
+  notifyStrategy: "notify" | "update" | "silent"
 ) => {
   if (!started) await app.start(3000);
   started = true;
 
-  // only send a new message if the message to update isn't the most recent message
-  if (notify) {
+  // if silent, never send a new message
+  if (notifyStrategy === "silent") {
+    await updateMessage(channelID, blocks);
+  }
+
+  // if notify, always send a new message
+  else if (notifyStrategy === "notify") {
+    recentMessages[channelID] = await publishMessage(channelID, blocks);
+  }
+
+  // only send a new message if the message to update isn't a recent message
+  else if (notifyStrategy === "update") {
     const previousId = await getMessageTS(channelID);
     const mostRecentMessages = await app.client.conversations.history({
       token: env.SLACK_BOT_TOKEN,
@@ -40,8 +50,6 @@ export const sendMessage = async (
       return;
     }
   }
-
-  recentMessages[channelID] = await updateMessage(channelID, blocks);
 };
 
 const publishMessage = async (channelId: string, blocks: KnownBlock[]) => {
