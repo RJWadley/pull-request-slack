@@ -5,10 +5,10 @@ import { makeCompactBlocks } from "./makeCompactBlocks";
 import { makeDevBlocks } from "./makeDevBlocks";
 import { sendMessage } from "./sendMessage";
 import { promisify } from "node:util";
+import { getLocalValue, saveLocalValue } from "./localStorage";
+import { hasNewPulls } from "./hasNewPulls";
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-
-let dateOfMostRecentPull = new Date();
 
 const execPromise = promisify(exec);
 
@@ -16,20 +16,13 @@ const loop = async () => {
   try {
     const pulls = await getPullData();
 
-    let hasNewPull = false;
-    for (const pull of pulls) {
-      const pullCreatedAt = new Date(pull.openedAt);
-      if (pullCreatedAt > dateOfMostRecentPull) {
-        hasNewPull = true;
-        dateOfMostRecentPull = pullCreatedAt;
-      }
-    }
+    const hasNew = hasNewPulls(pulls);
 
     const devBlocks = makeDevBlocks(pulls);
     await sendMessage(
       env.DEV_CHANNEL_ID,
       devBlocks,
-      hasNewPull ? "notify" : "update"
+      hasNew ? "notify" : "update"
     );
 
     const legworkPulls = pulls.filter((p) => p.repository === "legwork");
@@ -39,14 +32,14 @@ const loop = async () => {
     await sendMessage(
       env.LEGWORK_CHANNEL_ID,
       legwork,
-      hasNewPull ? "update" : "silent"
+      hasNew ? "update" : "silent"
     );
 
     const compactBlocks = await makeCompactBlocks(nonLegworkPulls);
     await sendMessage(
       env.COMPACT_CHANNEL_ID,
       compactBlocks,
-      hasNewPull ? "update" : "silent"
+      hasNew ? "update" : "silent"
     );
   } catch (e) {
     console.error(e);
