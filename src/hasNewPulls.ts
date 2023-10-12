@@ -5,7 +5,12 @@ export const hasNewPulls = (currentPulls: MappedPull[]) => {
   const trackedPulls = getLocalValue();
   let hasNewPull = false;
   for (const pull of currentPulls) {
-    if (!pull.draft && pull.checkState === "passing" && !pull.onHold) {
+    if (
+      // ready for review
+      (!pull.draft && pull.checkState === "passing" && !pull.onHold) ||
+      // already approved
+      pull.approved
+    ) {
       if (!trackedPulls.includes(pull.link)) {
         hasNewPull = true;
         trackedPulls.push(pull.link);
