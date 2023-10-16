@@ -53,4 +53,11 @@ const loop = async () => {
   loop();
 };
 
-loop();
+const init = async () => {
+  // set up data to prevent duplicate notifications
+  const pulls = await getPullData();
+  hasNewPulls(pulls);
+  loop();
+};
+
+init();
