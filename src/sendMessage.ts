@@ -9,6 +9,8 @@ let started = false;
 
 let recentMessages: { [key: string]: string | undefined } = {};
 
+const programStartedAt = new Date();
+
 /**
  *
  * @param channelID the channel to send the message to
@@ -23,6 +25,12 @@ export const sendMessage = async (
 ) => {
   if (!started) await app.start(3000);
   started = true;
+
+  // for the first 5 minutes, never send a new message
+  if (new Date().getTime() - programStartedAt.getTime() < 5 * 60 * 1000) {
+    await updateMessage(channelID, blocks);
+    return;
+  }
 
   // if silent, never send a new message
   if (notifyStrategy === "silent") {
