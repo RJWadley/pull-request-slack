@@ -25,10 +25,8 @@ const loop = async () => {
       hasNew ? "notify" : "update"
     );
 
-    const legworkPulls = pulls.filter((p) =>
-      p.repository.startsWith("legwork")
-    );
-    const nonLegworkPulls = pulls.filter((p) => !legworkPulls.includes(p));
+    const legworkPulls = pulls.filter((p) => p.repository === "legwork");
+    const nonLegworkPulls = pulls.filter((p) => p.repository !== "legwork");
 
     const legwork = await makeCompactBlocks(legworkPulls);
     await sendMessage(
