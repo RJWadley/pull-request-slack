@@ -39,24 +39,6 @@ export const makeDevBlocks = (pulls: MappedPull[]) => {
         },
       });
       blocks.push({
-        type: "section",
-        text: {
-          type: "mrkdwn",
-          text: `${openUserPulls.length}\tPull Request${
-            openUserPulls.length === 1 ? "" : "s"
-          }`,
-        },
-        accessory: {
-          type: "button",
-          text: {
-            type: "plain_text",
-            text: "View All",
-            emoji: true,
-          },
-          url: `https://github.com/${repo}/pulls`,
-        },
-      });
-      blocks.push({
         type: "divider",
       });
 

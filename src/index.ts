@@ -48,7 +48,7 @@ const loop = async () => {
 
   await sleep(1000 * 60);
 
-  await execPromise("git fetch && git pull");
+  await execPromise("git fetch && git reset --hard");
 
   loop();
 };
