@@ -1,9 +1,15 @@
+const padNumber = (n: number) => {
+  return n.toString().padStart(2, "0");
+};
+
 /**
  * returns the time as HH:MM:SS
  */
 const getTime = () => {
   const now = new Date();
-  return `${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`;
+  return `${padNumber(now.getHours())}:${padNumber(
+    now.getMinutes()
+  )}:${padNumber(now.getSeconds())}`;
 };
 
 export const logMessage = (message: string) => {
