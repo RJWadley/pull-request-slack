@@ -106,6 +106,7 @@ export const getPullData = async (): Promise<MappedPull[]> => {
       repo: repo.split("/")[1],
       state: "all",
       per_page: 100,
+      sort: "updated",
     });
 
     let pulls = newData.data;

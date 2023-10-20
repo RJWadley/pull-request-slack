@@ -5,7 +5,6 @@ import { makeCompactBlocks } from "./makeCompactBlocks";
 import { makeDevBlocks } from "./makeDevBlocks";
 import { sendMessage } from "./sendMessage";
 import { promisify } from "node:util";
-import { getLocalValue, saveLocalValue } from "./localStorage";
 import { hasNewPulls } from "./hasNewPulls";
 import { logMessage } from "./logMessage";
 
@@ -15,6 +14,7 @@ const execPromise = promisify(exec);
 
 const loop = async () => {
   try {
+    logMessage("Checking for updates...");
     const pulls = await getPullData();
     logMessage(`Checked for updates. ${pulls.length} pulls found.`);
 
@@ -51,6 +51,7 @@ const loop = async () => {
   await sleep(1000 * 60);
 
   await execPromise("git fetch && git reset --hard origin/master");
+  logMessage("Updated myself!");
 
   loop();
 };
