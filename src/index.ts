@@ -16,6 +16,7 @@ const execPromise = promisify(exec);
 const loop = async () => {
   try {
     const pulls = await getPullData();
+    logMessage(`Checked for updates. ${pulls.length} pulls found.`);
 
     const hasNew = hasNewPulls(pulls);
 
