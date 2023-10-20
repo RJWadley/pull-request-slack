@@ -1,5 +1,6 @@
 import { App, KnownBlock } from "@slack/bolt";
 import { env } from "./env";
+import { logMessage } from "./logMessage";
 
 export const app = new App({
   token: env.SLACK_BOT_TOKEN,
@@ -35,7 +36,7 @@ export const sendMessage = async (
   }
 
   // only send a new message if the message to update isn't a recent message
-  else if (notifyStrategy === "update") {
+  else {
     const previousId = await getMessageTS(channelID);
     const mostRecentMessages = await app.client.conversations.history({
       token: env.SLACK_BOT_TOKEN,
@@ -71,6 +72,7 @@ const publishMessage = async (channelId: string, blocks: KnownBlock[]) => {
     timestamp: previousMessageId,
   });
 
+  logMessage("Published a new message");
   return previousMessageId;
 };
 
@@ -86,6 +88,7 @@ const updateMessage = async (channelId: string, blocks: KnownBlock[]) => {
     text: "Pull Request Updated",
   });
 
+  logMessage("Updated a message");
   return previousId;
 };
 
