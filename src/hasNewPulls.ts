@@ -12,22 +12,14 @@ export const hasNewPulls = (currentPulls: MappedPull[]) => {
       pull.approved
     ) {
       if (!trackedPulls.includes(pull.link)) {
+        console.log(`New pull: ${pull.link}`);
         hasNewPull = true;
         trackedPulls.push(pull.link);
       }
-    } else {
-      // remove the link from the tracked pulls if its in there
-      const index = trackedPulls.indexOf(pull.link);
-      if (index !== -1) {
-        trackedPulls.splice(index, 1);
-      }
     }
   }
-  saveLocalValue(
-    trackedPulls
-      //filter out links that are no longer in the pulls array
-      .filter((link) => currentPulls.some((pull) => pull.link === link))
-  );
+
+  saveLocalValue(trackedPulls);
 
   return hasNewPull;
 };
