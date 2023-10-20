@@ -51,7 +51,6 @@ const loop = async () => {
   await sleep(1000 * 60);
 
   await execPromise("git fetch && git reset --hard origin/master");
-  console.log("Checked for updates");
 
   loop();
 };
