@@ -48,12 +48,13 @@ const loop = async () => {
 
   await sleep(1000 * 60);
 
-  await execPromise("git fetch && git reset --hard");
+  await execPromise("git fetch && git reset --hard origin/master");
 
   loop();
 };
 
 const init = async () => {
+  console.log("Starting! Current time is", new Date().toLocaleString());
   loop();
 };
 
