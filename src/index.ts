@@ -7,6 +7,7 @@ import { sendMessage } from "./sendMessage";
 import { promisify } from "node:util";
 import { getLocalValue, saveLocalValue } from "./localStorage";
 import { hasNewPulls } from "./hasNewPulls";
+import { logMessage } from "./logMessage";
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -43,18 +44,19 @@ const loop = async () => {
     );
   } catch (e) {
     console.error(e);
-    console.log("Current time is", new Date().toLocaleString());
+    logMessage("Error! " + String(e));
   }
 
   await sleep(1000 * 60);
 
   await execPromise("git fetch && git reset --hard origin/master");
+  console.log("Checked for updates");
 
   loop();
 };
 
 const init = async () => {
-  console.log("Starting! Current time is", new Date().toLocaleString());
+  logMessage("Starting up...");
   loop();
 };
 

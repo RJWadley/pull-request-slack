@@ -1,13 +1,6 @@
 import { MappedPull } from "./getPullData";
 import { getLocalValue, saveLocalValue } from "./localStorage";
-
-/**
- * returns the time as HH:MM:SS
- */
-const getTime = () => {
-  const now = new Date();
-  return `${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`;
-};
+import { logMessage } from "./logMessage";
 
 export const hasNewPulls = (currentPulls: MappedPull[]) => {
   const trackedPulls = getLocalValue();
@@ -20,7 +13,7 @@ export const hasNewPulls = (currentPulls: MappedPull[]) => {
       pull.approved
     ) {
       if (!trackedPulls.includes(pull.link)) {
-        console.log(`[${getTime()}] New pull: ${pull.link}`);
+        logMessage(`New pull: ${pull.link}`);
         hasNewPull = true;
         trackedPulls.push(pull.link);
       }
