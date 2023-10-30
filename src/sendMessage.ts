@@ -82,6 +82,14 @@ const updateMessage = async (channelId: string, blocks: KnownBlock[]) => {
   const previousId = await getMessageTS(channelId);
   if (!previousId) return publishMessage(channelId, blocks);
 
+  await app.client.chat.update({
+    token: env.SLACK_BOT_TOKEN,
+    channel: channelId,
+    ts: previousId,
+    blocks,
+    text: "Pull Request Updated",
+  });
+
   logMessage("Updated a message");
   return previousId;
 };
