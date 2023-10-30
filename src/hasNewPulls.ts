@@ -8,7 +8,7 @@ export const hasNewPulls = (currentPulls: MappedPull[]) => {
   for (const pull of currentPulls) {
     if (
       // ready for review
-      (!pull.draft && pull.checkState === "passing" && !pull.onHold) ||
+      (!pull.draft && !pull.onHold) ||
       // already approved
       pull.approved
     ) {
