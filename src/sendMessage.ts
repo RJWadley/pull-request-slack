@@ -46,7 +46,9 @@ export const sendMessage = async (
     const isWithinMostRecent = mostRecentMessages.messages?.some(
       (message) => message.ts === previousId
     );
-    if (!isWithinMostRecent) {
+    if (isWithinMostRecent) {
+      await updateMessage(channelID, blocks);
+    } else {
       recentMessages[channelID] = await publishMessage(channelID, blocks);
       return;
     }
@@ -79,18 +81,6 @@ const publishMessage = async (channelId: string, blocks: KnownBlock[]) => {
 const updateMessage = async (channelId: string, blocks: KnownBlock[]) => {
   const previousId = await getMessageTS(channelId);
   if (!previousId) return publishMessage(channelId, blocks);
-
-  console.log(
-    JSON.stringify(
-      await app.client.chat.update({
-        token: env.SLACK_BOT_TOKEN,
-        channel: channelId,
-        ts: previousId,
-        blocks,
-        text: "Pull Request Updated",
-      })
-    )
-  );
 
   logMessage("Updated a message");
   return previousId;
