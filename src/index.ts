@@ -20,11 +20,11 @@ const loop = async () => {
 
     const hasNew = hasNewPulls(pulls);
 
-    const devBlocks = makeDevBlocks(pulls);
+    const { blocks: devBlocks, forcePing } = makeDevBlocks(pulls);
     await sendMessage(
       env.DEV_CHANNEL_ID,
       devBlocks,
-      hasNew ? "notify" : "update"
+      forcePing ? "notify" : hasNew ? "notify" : "update"
     );
 
     const legworkPulls = pulls.filter((p) => p.repository === "legwork");

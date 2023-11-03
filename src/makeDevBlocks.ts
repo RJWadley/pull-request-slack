@@ -15,6 +15,8 @@ const allPingUsers = Object.keys(pingIds) as PingUser[];
 
 let thoseWhoCanReview = new Set<PingUser>();
 
+let lastThoseWhoCanReview: string = "";
+
 export const makeDevBlocks = (pulls: MappedPull[]) => {
   const blocks: KnownBlock[] = [];
   const currentPulls = pulls
@@ -133,24 +135,31 @@ export const makeDevBlocks = (pulls: MappedPull[]) => {
     }
   }
 
+  let forcePing = false;
+
   if (thoseWhoCanReview.size > 0) {
     blocks.push({
       type: "divider",
     });
+
+    const asString = Array.from(thoseWhoCanReview)
+      .map((user) => `<@${pingIds[user]}>`)
+      .join(" ");
 
     // say There are pull requests to review: <@user> <@user> <@user>
     blocks.push({
       type: "section",
       text: {
         type: "mrkdwn",
-        text: `There are pull requests to review: ${Array.from(
-          thoseWhoCanReview
-        )
-          .map((user) => `<@${pingIds[user]}>`)
-          .join(" ")}`,
+        text: `There are pull requests to review: ${asString}`,
       },
     });
+
+    if (asString !== lastThoseWhoCanReview) {
+      forcePing = true;
+      lastThoseWhoCanReview = asString;
+    }
   }
 
-  return blocks;
+  return { blocks, forcePing };
 };
