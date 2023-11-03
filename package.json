@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "clean": "bun upgrade && rm -f .git/index.lock && rm -f .git/refs/heads/master.lock && bun install",
+    "clean": "bun upgrade && rm -f .git/index.lock && rm -f .git/refs/heads/master.lock && git fetch && git pull && bun install",
     "start": "bun run clean && bun --bun --watch ./src/index",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

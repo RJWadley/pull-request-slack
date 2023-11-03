@@ -1,16 +1,17 @@
-import { exec } from "node:child_process";
 import { env } from "./env";
 import { getPullData } from "./getPullData";
 import { makeCompactBlocks } from "./makeCompactBlocks";
 import { makeDevBlocks } from "./makeDevBlocks";
 import { sendMessage } from "./sendMessage";
-import { promisify } from "node:util";
 import { hasNewPulls } from "./hasNewPulls";
 import { logMessage } from "./logMessage";
 
-const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+import { exec as _exec } from "node:child_process";
+import { promisify } from "node:util";
 
-const execPromise = promisify(exec);
+const exec = promisify(_exec);
+
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const loop = async () => {
   try {
@@ -56,7 +57,7 @@ const loop = async () => {
       logMessage("Update took too long, restarting...");
       process.exit(1);
     })(),
-    execPromise("git fetch && git pull"),
+    exec("git fetch && git pull"),
   ]).catch(() => {
     logMessage("Update failed!");
     process.exit(1);
