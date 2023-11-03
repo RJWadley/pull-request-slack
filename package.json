@@ -4,22 +4,22 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "clean": "rm -f .git/index.lock && rm -f .git/refs/heads/master.lock && bun install",
+    "clean": "bun upgrade && rm -f .git/index.lock && rm -f .git/refs/heads/master.lock && bun install",
     "start": "bun run clean && bun --bun --watch ./src/index",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@octokit/rest": "^20.0.1",
-    "@octokit/types": "^11.1.0",
-    "@slack/bolt": "^3.13.3",
+    "@octokit/rest": "^20.0.2",
+    "@octokit/types": "^12.1.1",
+    "@slack/bolt": "^3.14.0",
     "dotenv": "^16.3.1",
-    "typescript": "^5.1.6"
+    "typescript": "^5.2.2"
   },
   "devDependencies": {
-    "@tsconfig/recommended": "^1.0.2",
-    "@types/node": "^20.4.8",
+    "@tsconfig/recommended": "^1.0.3",
+    "@types/node": "^20.8.10",
     "nodemon": "^3.0.1"
   }
 }
