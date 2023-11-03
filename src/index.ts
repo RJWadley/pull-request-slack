@@ -53,6 +53,7 @@ const loop = async () => {
   await Promise.race([
     (async () => {
       sleep(10_000);
+      logMessage("Update took too long, restarting...");
       process.exit(1);
     })(),
     execPromise("git fetch && git reset --hard origin/master"),
