@@ -56,8 +56,11 @@ const loop = async () => {
       logMessage("Update took too long, restarting...");
       process.exit(1);
     })(),
-    execPromise("git fetch && git reset --hard origin/master"),
-  ]);
+    execPromise("git fetch && git pull"),
+  ]).catch(() => {
+    logMessage("Update failed!");
+    process.exit(1);
+  });
   logMessage("Updated myself!");
 
   loop();
