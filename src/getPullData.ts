@@ -83,6 +83,14 @@ export interface MappedPull {
    * name of the branch this pull request is mergin into
    */
   baseBranch: string;
+  /**
+   * is auto merge enabled for this pull request?
+   */
+  waitingForAutoMerge: boolean;
+  /**
+   * is this behind the base branch?
+   */
+  behindBaseBranch: boolean;
 }
 
 const octokit = new Octokit({
@@ -184,6 +192,31 @@ export const getPullData = async (): Promise<MappedPull[]> => {
         (label) => label.name.toLowerCase() === "on hold"
       );
 
+      const approved = reviews
+        ? reviews.data.filter((review) => review.state === "APPROVED").length >=
+          REQUIRED_APPROVAL_COUNT
+        : false;
+
+      /**
+       * are we out of date?
+       * yes if
+       * - checks are passing
+       * - we are approved
+       * - auto merge is enabled
+       */
+      const isOutOfDate =
+        checkState === "passing" && approved && Boolean(pull.auto_merge);
+
+      /**
+       * are we waiting for auto merge?
+       * yes if
+       * - checks are running
+       * - we are approved
+       * - auto merge is enabled
+       */
+      const waitingForAutoMerge =
+        checkState === "pending" && approved && Boolean(pull.auto_merge);
+
       mappedData.push({
         author: pull.user?.login ?? "unknown",
         repository: pull.base.repo.name,
@@ -197,10 +230,7 @@ export const getPullData = async (): Promise<MappedPull[]> => {
         checkState,
         organization: pull.base.repo.owner.login,
         onHold: onHold,
-        approved: reviews
-          ? reviews.data.filter((review) => review.state === "APPROVED")
-              .length >= REQUIRED_APPROVAL_COUNT
-          : false,
+        approved,
         reviews: reviews
           ? reviews.data.map((review) => {
               return {
@@ -211,6 +241,8 @@ export const getPullData = async (): Promise<MappedPull[]> => {
             })
           : [],
         baseBranch: pull.base.ref,
+        waitingForAutoMerge: waitingForAutoMerge,
+        behindBaseBranch: isOutOfDate,
       });
     }
   }

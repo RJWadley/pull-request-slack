@@ -74,8 +74,17 @@ export const makeDevBlocks = (pulls: MappedPull[]) => {
             type: "button",
             text: {
               type: "plain_text",
-              text: pull.draft ? "View" : pull.approved ? "Approved" : "Review",
-              emoji: true,
+              text: pull.draft
+                ? "View Draft"
+                : !pull.approved
+                ? "Review Pull"
+                : pull.waitingForAutoMerge
+                ? "Waiting for Auto Merge"
+                : pull.behindBaseBranch
+                ? "Out of Date"
+                : pull.checkState === "failing"
+                ? "Checks Failed"
+                : "Approved",
             },
             style: pull.approved || pull.draft ? undefined : "primary",
             url: pull.link,
