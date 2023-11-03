@@ -3,6 +3,7 @@ import { MappedPull } from "./getPullData";
 
 import slackEmojis from "./data/slackEmojis.json";
 import pingIds from "./data/pingIds.json";
+import { logMessage } from "./logMessage";
 
 type User = keyof typeof slackEmojis;
 
@@ -88,6 +89,7 @@ export const makeDevBlocks = (pulls: MappedPull[]) => {
           // only include pulls older than 10 minutes
           new Date(pull.openedAt).getTime() < Date.now() - 10 * 60 * 1000
         ) {
+          logMessage(`${pull.title} is waiting for review`);
           allPingUsers
             .filter((user) => user !== pull.author)
             .forEach((user) => {
