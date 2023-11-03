@@ -14,42 +14,42 @@ const exec = promisify(_exec);
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const loop = async () => {
-  // try {
-  //   logMessage("Checking for updates...");
-  //   const pulls = await getPullData();
-  //   logMessage(`Checked for updates. ${pulls.length} pulls found.`);
+  try {
+    logMessage("Checking for updates...");
+    const pulls = await getPullData();
+    logMessage(`Checked for updates. ${pulls.length} pulls found.`);
 
-  //   const hasNew = hasNewPulls(pulls);
+    const hasNew = hasNewPulls(pulls);
 
-  //   const { blocks: devBlocks, forcePing } = makeDevBlocks(pulls);
-  //   await sendMessage(
-  //     env.DEV_CHANNEL_ID,
-  //     devBlocks,
-  //     forcePing ? "notify" : hasNew ? "notify" : "update"
-  //   );
+    const { blocks: devBlocks, forcePing } = makeDevBlocks(pulls);
+    await sendMessage(
+      env.DEV_CHANNEL_ID,
+      devBlocks,
+      forcePing ? "notify" : hasNew ? "notify" : "update"
+    );
 
-  //   const legworkPulls = pulls.filter((p) => p.repository === "legwork");
-  //   const nonLegworkPulls = pulls.filter((p) => p.repository !== "legwork");
+    const legworkPulls = pulls.filter((p) => p.repository === "legwork");
+    const nonLegworkPulls = pulls.filter((p) => p.repository !== "legwork");
 
-  //   const legwork = await makeCompactBlocks(legworkPulls);
-  //   await sendMessage(
-  //     env.LEGWORK_CHANNEL_ID,
-  //     legwork,
-  //     hasNew ? "update" : "silent"
-  //   );
+    const legwork = await makeCompactBlocks(legworkPulls);
+    await sendMessage(
+      env.LEGWORK_CHANNEL_ID,
+      legwork,
+      hasNew ? "update" : "silent"
+    );
 
-  //   const compactBlocks = await makeCompactBlocks(nonLegworkPulls);
-  //   await sendMessage(
-  //     env.COMPACT_CHANNEL_ID,
-  //     compactBlocks,
-  //     hasNew ? "update" : "silent"
-  //   );
-  // } catch (e) {
-  //   console.error(e);
-  //   logMessage("Error! " + String(e));
-  // }
+    const compactBlocks = await makeCompactBlocks(nonLegworkPulls);
+    await sendMessage(
+      env.COMPACT_CHANNEL_ID,
+      compactBlocks,
+      hasNew ? "update" : "silent"
+    );
+  } catch (e) {
+    console.error(e);
+    logMessage("Error! " + String(e));
+  }
 
-  // await sleep(1000 * 60);
+  await sleep(1000 * 60);
 
   const out = await exec("git fetch && git pull");
   logMessage(`Updated myself! ${out.stdout}${out.stderr}`);
