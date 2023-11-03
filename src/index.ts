@@ -50,7 +50,13 @@ const loop = async () => {
 
   await sleep(1000 * 60);
 
-  await execPromise("git fetch && git reset --hard origin/master");
+  await Promise.race([
+    (async () => {
+      sleep(10_000);
+      process.exit(1);
+    })(),
+    execPromise("git fetch && git reset --hard origin/master"),
+  ]);
   logMessage("Updated myself!");
 
   loop();
