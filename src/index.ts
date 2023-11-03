@@ -51,18 +51,18 @@ const loop = async () => {
 
   await sleep(1000 * 60);
 
-  await Promise.race([
-    (async () => {
-      sleep(10_000);
-      logMessage("Update took too long, restarting...");
-      process.exit(1);
-    })(),
-    exec("git fetch && git pull"),
-  ]).catch(() => {
-    logMessage("Update failed!");
-    process.exit(1);
-  });
-  logMessage("Updated myself!");
+  // await Promise.race([
+  //   (async () => {
+  //     sleep(10_000);
+  //     logMessage("Update took too long, restarting...");
+  //     process.exit(1);
+  //   })(),
+  //   exec("git fetch && git pull"),
+  // ]).catch(() => {
+  //   logMessage("Update failed!");
+  //   process.exit(1);
+  // });
+  // logMessage("Updated myself!");
 
   loop();
 };
