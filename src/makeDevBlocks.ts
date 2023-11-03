@@ -2,12 +2,18 @@ import { KnownBlock } from "@slack/bolt";
 import { MappedPull } from "./getPullData";
 
 import slackEmojis from "./data/slackEmojis.json";
+import pingIds from "./data/pingIds.json";
 
 type User = keyof typeof slackEmojis;
 
 const isUser = (user: string): user is User => {
   return user in slackEmojis;
 };
+
+type PingUser = keyof typeof pingIds;
+const allPingUsers = Object.keys(pingIds) as PingUser[];
+
+let thoseWhoCanReview = new Set<PingUser>();
 
 export const makeDevBlocks = (pulls: MappedPull[]) => {
   const blocks: KnownBlock[] = [];
@@ -73,6 +79,20 @@ export const makeDevBlocks = (pulls: MappedPull[]) => {
           },
         });
 
+        // track those who can review
+        if (
+          !pull.draft &&
+          !pull.approved &&
+          // only include pulls older than 10 minutes
+          new Date(pull.openedAt).getTime() < Date.now() - 10 * 60 * 1000
+        ) {
+          allPingUsers
+            .filter((user) => user !== pull.author)
+            .forEach((user) => {
+              thoseWhoCanReview.add(user);
+            });
+        }
+
         pull.reviews.forEach((review) => {
           let message = "";
 
@@ -111,6 +131,25 @@ export const makeDevBlocks = (pulls: MappedPull[]) => {
         });
       });
     }
+  }
+
+  if (thoseWhoCanReview.size > 0) {
+    blocks.push({
+      type: "divider",
+    });
+
+    // say There are pull requests to review: <@user> <@user> <@user>
+    blocks.push({
+      type: "section",
+      text: {
+        type: "mrkdwn",
+        text: `There are pull requests to review: ${Array.from(
+          thoseWhoCanReview
+        )
+          .map((user) => `<@${pingIds[user]}>`)
+          .join(" ")}`,
+      },
+    });
   }
 
   return blocks;
