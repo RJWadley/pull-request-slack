@@ -19,8 +19,10 @@ const loop = async () => {
     const pulls = await getPullData();
     logMessage(`Checked for updates. ${pulls.length} pulls found.`);
 
-    const legworkPulls = pulls.filter((p) => p.repository === "legwork");
-    const nonLegworkPulls = pulls.filter((p) => p.repository !== "legwork");
+    const legworkPulls = pulls.filter((p) =>
+      p.repository.startsWith("legwork")
+    );
+    const nonLegworkPulls = pulls.filter((p) => !legworkPulls.includes(p));
 
     const hasNewLegwork = hasNewPulls(legworkPulls);
     const hasNewNonLegwork = hasNewPulls(nonLegworkPulls);
