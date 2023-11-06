@@ -19,7 +19,12 @@ const loop = async () => {
     const pulls = await getPullData();
     logMessage(`Checked for updates. ${pulls.length} pulls found.`);
 
-    const hasNew = hasNewPulls(pulls);
+    const legworkPulls = pulls.filter((p) => p.repository === "legwork");
+    const nonLegworkPulls = pulls.filter((p) => p.repository !== "legwork");
+
+    const hasNewLegwork = hasNewPulls(legworkPulls);
+    const hasNewNonLegwork = hasNewPulls(nonLegworkPulls);
+    const hasNew = hasNewLegwork || hasNewNonLegwork;
 
     const { blocks: devBlocks, forcePing } = makeDevBlocks(pulls);
     await sendMessage(
@@ -28,21 +33,18 @@ const loop = async () => {
       forcePing ? "notify" : hasNew ? "notify" : "update"
     );
 
-    const legworkPulls = pulls.filter((p) => p.repository === "legwork");
-    const nonLegworkPulls = pulls.filter((p) => p.repository !== "legwork");
-
     const legwork = await makeCompactBlocks(legworkPulls);
     await sendMessage(
       env.LEGWORK_CHANNEL_ID,
       legwork,
-      hasNew ? "update" : "silent"
+      hasNewLegwork ? "update" : "silent"
     );
 
     const compactBlocks = await makeCompactBlocks(nonLegworkPulls);
     await sendMessage(
       env.COMPACT_CHANNEL_ID,
       compactBlocks,
-      hasNew ? "update" : "silent"
+      hasNewNonLegwork ? "update" : "silent"
     );
   } catch (e) {
     console.error(e);
@@ -59,6 +61,11 @@ const loop = async () => {
 
 const init = async () => {
   logMessage("Starting up...");
+
+  const pulls = await getPullData();
+  hasNewPulls(pulls);
+
+  logMessage("System is primed!");
   loop();
 };
 

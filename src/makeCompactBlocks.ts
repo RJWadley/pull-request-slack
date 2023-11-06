@@ -96,6 +96,15 @@ export const makeCompactBlocks = async (pullsIn: MappedPull[]) => {
         emoji: true,
       },
     });
+  else
+    blocks.push({
+      type: "header",
+      text: {
+        type: "plain_text",
+        text: "No Upcoming Changes",
+        emoji: true,
+      },
+    });
 
   for (const pull of currentPulls) {
     const ready =
