@@ -19,6 +19,9 @@ let thoseWhoCanReview = new Set<PingUser>();
 let lastThoseWhoCanReview: string = "";
 
 export const makeDevBlocks = (pulls: MappedPull[]) => {
+  // reset pings
+  thoseWhoCanReview = new Set<PingUser>();
+
   const blocks: KnownBlock[] = [];
   const currentPulls = pulls
     .filter(
