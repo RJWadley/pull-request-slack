@@ -20,19 +20,24 @@ let recentMessages: { [key: string]: string | undefined } = {};
 export const sendMessage = async (
   channelID: string,
   blocks: KnownBlock[],
-  notifyStrategy: "notify" | "update" | "silent"
+  notifyStrategy: "notify" | "update" | "silent",
+  fallbackText: string
 ) => {
   if (!started) await app.start(3000);
   started = true;
 
   // if silent, never send a new message
   if (notifyStrategy === "silent") {
-    await updateMessage(channelID, blocks);
+    await updateMessage(channelID, blocks, fallbackText);
   }
 
   // if notify, always send a new message
   else if (notifyStrategy === "notify") {
-    recentMessages[channelID] = await publishMessage(channelID, blocks);
+    recentMessages[channelID] = await publishMessage(
+      channelID,
+      blocks,
+      fallbackText
+    );
   }
 
   // only send a new message if the message to update isn't a recent message
@@ -47,15 +52,23 @@ export const sendMessage = async (
       (message) => message.ts === previousId
     );
     if (isWithinMostRecent) {
-      await updateMessage(channelID, blocks);
+      await updateMessage(channelID, blocks, fallbackText);
     } else {
-      recentMessages[channelID] = await publishMessage(channelID, blocks);
+      recentMessages[channelID] = await publishMessage(
+        channelID,
+        blocks,
+        fallbackText
+      );
       return;
     }
   }
 };
 
-const publishMessage = async (channelId: string, blocks: KnownBlock[]) => {
+const publishMessage = async (
+  channelId: string,
+  blocks: KnownBlock[],
+  fallback: string
+) => {
   await deleteAllMessages(channelId);
 
   // Call the chat.postMessage method using the built-in WebClient
@@ -64,7 +77,7 @@ const publishMessage = async (channelId: string, blocks: KnownBlock[]) => {
     token: env.SLACK_BOT_TOKEN,
     channel: channelId,
     blocks,
-    text: "Pull Request Summary",
+    text: fallback,
   });
 
   const previousMessageId = result?.ts ?? "";
@@ -78,16 +91,20 @@ const publishMessage = async (channelId: string, blocks: KnownBlock[]) => {
   return previousMessageId;
 };
 
-const updateMessage = async (channelId: string, blocks: KnownBlock[]) => {
+const updateMessage = async (
+  channelId: string,
+  blocks: KnownBlock[],
+  fallback: string
+) => {
   const previousId = await getMessageTS(channelId);
-  if (!previousId) return publishMessage(channelId, blocks);
+  if (!previousId) return publishMessage(channelId, blocks, fallback);
 
   await app.client.chat.update({
     token: env.SLACK_BOT_TOKEN,
     channel: channelId,
     ts: previousId,
     blocks,
-    text: "Pull Request Updated",
+    text: fallback,
   });
 
   logMessage("Updated a message");

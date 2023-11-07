@@ -32,21 +32,28 @@ const loop = async () => {
     await sendMessage(
       env.DEV_CHANNEL_ID,
       devBlocks,
-      forcePing ? "notify" : hasNew ? "notify" : "update"
+      forcePing ? "notify" : hasNew ? "notify" : "update",
+      forcePing
+        ? "You have a pull request to review!"
+        : hasNew
+        ? "New Pull Requests"
+        : "Updated Pull Requests"
     );
 
     const legwork = await makeCompactBlocks(legworkPulls);
     await sendMessage(
       env.LEGWORK_CHANNEL_ID,
       legwork,
-      hasNewLegwork ? "update" : "silent"
+      hasNewLegwork ? "update" : "silent",
+      hasNewLegwork ? "New Pull Requests" : "Updated Pull Requests"
     );
 
     const compactBlocks = await makeCompactBlocks(nonLegworkPulls);
     await sendMessage(
       env.COMPACT_CHANNEL_ID,
       compactBlocks,
-      hasNewNonLegwork ? "update" : "silent"
+      hasNewNonLegwork ? "update" : "silent",
+      hasNewNonLegwork ? "New Pull Requests" : "Updated Pull Requests"
     );
   } catch (e) {
     console.error(e);
