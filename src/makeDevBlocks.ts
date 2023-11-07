@@ -14,6 +14,10 @@ const isUser = (user: string): user is User => {
 type PingUser = keyof typeof pingIds;
 const allPingUsers = Object.keys(pingIds) as PingUser[];
 
+const isPingUser = (user: string): user is PingUser => {
+  return user in pingIds;
+};
+
 let thoseWhoCanReview = new Set<PingUser>();
 
 let lastThoseWhoCanReview: string = "";
@@ -98,6 +102,8 @@ export const makeDevBlocks = (pulls: MappedPull[]) => {
         if (
           !pull.draft &&
           !pull.approved &&
+          // only include pulls opened by pingable users
+          isPingUser(pull.author) &&
           // only include pulls older than 10 minutes
           new Date(pull.openedAt).getTime() < Date.now() - 10 * 60 * 1000
         ) {
