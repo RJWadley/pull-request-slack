@@ -33,11 +33,7 @@ const loop = async () => {
       env.DEV_CHANNEL_ID,
       devBlocks,
       forcePing ? "notify" : hasNew ? "notify" : "update",
-      forcePing
-        ? "You have a pull request to review!"
-        : hasNew
-        ? "New Pull Requests"
-        : "Updated Pull Requests"
+      "You have a pull request to review!"
     );
 
     const legwork = await makeCompactBlocks(legworkPulls);
