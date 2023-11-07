@@ -28,8 +28,8 @@ export const makeCompactBlocks = async (pullsIn: MappedPull[]) => {
   const pulls = pullsIn
     // only include repos the design team cares about
     .filter((pull) => !irrelevantRepositories.includes(pull.repository))
-    // only include pulls into the main branch
-    .filter((pull) => pull.baseBranch === "main")
+    // only include pulls into the main or demo (legwork) branch
+    .filter((pull) => pull.baseBranch === "main" || pull.baseBranch === "demo")
     // only include pull that aren't on hold
     .filter((pull) => !pull.onHold);
 
