@@ -165,22 +165,13 @@ export const makeCompactBlocks = async (pullsIn: MappedPull[]) => {
         pull.repository === mostRecentPull.repository
     );
 
-    /**
-     * format date as ""
-     */
-
-    if (pull.mergedAt)
-      blocks.push({
-        type: "section",
-        text: {
-          type: "mrkdwn",
-          text: `${repoEmoji} ${userEmoji}\t*${
-            pull.number
-          }*\t\t${`<!date^${new Date(pull.mergedAt)
-            // format in unix time
-            .getTime()}^Merged {date} at {time}|Merged>`}\t${pull.title}`,
-        },
-      });
+    blocks.push({
+      type: "section",
+      text: {
+        type: "mrkdwn",
+        text: `${repoEmoji} ${userEmoji}\t*${pull.number}*\t${pull.title}`,
+      },
+    });
 
     if (isMostRecent) {
       const buildStatus = await getBuildStatus(
