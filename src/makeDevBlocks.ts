@@ -103,9 +103,9 @@ export const makeDevBlocks = (pulls: MappedPull[]) => {
           !pull.draft &&
           !pull.approved &&
           // only include pulls opened by pingable users
-          isPingUser(pull.author) &&
+          isPingUser(pull.author)
           // only include pulls older than 10 minutes
-          new Date(pull.openedAt).getTime() < Date.now() - 10 * 60 * 1000
+          // new Date(pull.openedAt).getTime() < Date.now() - 10 * 60 * 1000
         ) {
           logMessage(`${pull.title} is waiting for review`);
           allPingUsers
