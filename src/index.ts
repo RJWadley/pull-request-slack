@@ -51,15 +51,15 @@ const loop = async () => {
       hasNewNonLegwork ? "update" : "silent",
       hasNewNonLegwork ? "New Pull Requests" : "Updated Pull Requests"
     );
+
+    await sleep(1000 * 60);
+
+    const out = await exec("git fetch && git pull");
+    logMessage(`Updated myself! ${out.stdout}${out.stderr}`);
   } catch (e) {
     console.error(e);
     logMessage("Error! " + String(e));
   }
-
-  await sleep(1000 * 60);
-
-  const out = await exec("git fetch && git pull");
-  logMessage(`Updated myself! ${out.stdout}${out.stderr}`);
 
   loop();
 };
