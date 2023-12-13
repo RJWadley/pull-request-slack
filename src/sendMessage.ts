@@ -23,7 +23,7 @@ export const sendMessage = async (
   notifyStrategy: "notify" | "update" | "silent",
   fallbackText: string
 ) => {
-  if (!started) await app.start(3000);
+  if (!started) await app.start(4000);
   started = true;
 
   // if silent, never send a new message
@@ -128,6 +128,8 @@ const deleteAllMessages = async (channelId: string) => {
       }
     });
 };
+
+deleteAllMessages("C05AAR27TDK");
 
 const getMessageTS = async (channelId: string) => {
   let previousId = recentMessages[channelId];
