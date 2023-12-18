@@ -8,58 +8,54 @@ import { logMessage } from "./logMessage";
 
 import { exec as _exec } from "node:child_process";
 import { promisify } from "node:util";
+import { heartbeat } from "./health";
 
 const exec = promisify(_exec);
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const loop = async () => {
-  try {
-    logMessage("Checking for updates...");
-    const pulls = await getPullData();
-    logMessage(`Checked for updates. ${pulls.length} pulls found.`);
+  heartbeat();
 
-    const legworkPulls = pulls.filter((p) =>
-      p.repository.startsWith("legwork")
-    );
-    const nonLegworkPulls = pulls.filter((p) => !legworkPulls.includes(p));
+  logMessage("Checking for updates...");
+  const pulls = await getPullData();
+  logMessage(`Checked for updates. ${pulls.length} pulls found.`);
 
-    const hasNewLegwork = hasNewPulls(legworkPulls);
-    const hasNewNonLegwork = hasNewPulls(nonLegworkPulls);
-    const hasNew = hasNewLegwork || hasNewNonLegwork;
+  const legworkPulls = pulls.filter((p) => p.repository.startsWith("legwork"));
+  const nonLegworkPulls = pulls.filter((p) => !legworkPulls.includes(p));
 
-    const { blocks: devBlocks, forcePing } = makeDevBlocks(pulls);
-    await sendMessage(
-      env.DEV_CHANNEL_ID,
-      devBlocks,
-      forcePing ? "notify" : hasNew ? "notify" : "update",
-      "You have a pull request to review!"
-    );
+  const hasNewLegwork = hasNewPulls(legworkPulls);
+  const hasNewNonLegwork = hasNewPulls(nonLegworkPulls);
+  const hasNew = hasNewLegwork || hasNewNonLegwork;
 
-    const legwork = await makeCompactBlocks(legworkPulls);
-    await sendMessage(
-      env.LEGWORK_CHANNEL_ID,
-      legwork,
-      hasNewLegwork ? "update" : "silent",
-      hasNewLegwork ? "New Pull Requests" : "Updated Pull Requests"
-    );
+  const { blocks: devBlocks, forcePing } = makeDevBlocks(pulls);
+  await sendMessage(
+    env.DEV_CHANNEL_ID,
+    devBlocks,
+    forcePing ? "notify" : hasNew ? "notify" : "update",
+    "You have a pull request to review!"
+  );
 
-    const compactBlocks = await makeCompactBlocks(nonLegworkPulls);
-    await sendMessage(
-      env.COMPACT_CHANNEL_ID,
-      compactBlocks,
-      hasNewNonLegwork ? "update" : "silent",
-      hasNewNonLegwork ? "New Pull Requests" : "Updated Pull Requests"
-    );
+  const legwork = await makeCompactBlocks(legworkPulls);
+  await sendMessage(
+    env.LEGWORK_CHANNEL_ID,
+    legwork,
+    hasNewLegwork ? "update" : "silent",
+    hasNewLegwork ? "New Pull Requests" : "Updated Pull Requests"
+  );
 
-    await sleep(1000 * 60);
+  const compactBlocks = await makeCompactBlocks(nonLegworkPulls);
+  await sendMessage(
+    env.COMPACT_CHANNEL_ID,
+    compactBlocks,
+    hasNewNonLegwork ? "update" : "silent",
+    hasNewNonLegwork ? "New Pull Requests" : "Updated Pull Requests"
+  );
 
-    const out = await exec("git fetch && git pull");
-    logMessage(`Updated myself! ${out.stdout}${out.stderr}`);
-  } catch (e) {
-    console.error(e);
-    logMessage("Error! " + String(e));
-  }
+  await sleep(1000 * 60);
+
+  const out = await exec("git fetch && git pull");
+  logMessage(`Updated myself! ${out.stdout}${out.stderr}`);
 
   loop();
 };
