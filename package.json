@@ -19,7 +19,6 @@
   },
   "devDependencies": {
     "@tsconfig/recommended": "^1.0.3",
-    "@types/node": "^20.11.24",
-    "nodemon": "^3.1.0"
+    "@types/node": "^20.11.24"
   }
 }
