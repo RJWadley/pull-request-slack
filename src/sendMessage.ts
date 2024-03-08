@@ -129,8 +129,6 @@ const deleteAllMessages = async (channelId: string) => {
     });
 };
 
-deleteAllMessages("C05AAR27TDK");
-
 const getMessageTS = async (channelId: string) => {
   let previousId = recentMessages[channelId];
 
