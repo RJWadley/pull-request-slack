@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "clean": "bun upgrade && rm -f .git/index.lock && rm -f .git/refs/heads/master.lock && git fetch && git pull && bun install",
+    "clean": "nvm use && bun upgrade && rm -f .git/index.lock && rm -f .git/refs/heads/master.lock && git fetch && git pull && bun install",
     "start_bad": "bun run clean && bun --bun --watch ./src/index",
-    "start": "tsc --outDir build && node build/index.js",
+    "start": "npm run clean && tsc --outDir build && node build/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
