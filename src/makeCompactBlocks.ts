@@ -123,7 +123,7 @@ export const makeCompactBlocks = async (pullsIn: MappedPull[]) => {
 
     const repoEmoji = isRepoName(pull.repository)
       ? repoSlackEmojis[pull.repository]
-      : pull.repository;
+      : `:${pull.repository.replaceAll(/[^a-z0-9]/i, "")}_icon:`;
 
     blocks.push({
       type: "section",
