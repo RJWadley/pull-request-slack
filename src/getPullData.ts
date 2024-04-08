@@ -1,4 +1,4 @@
-import repositories from "./data/repositories.json";
+import repositories from "./data/repositories";
 
 import { Octokit } from "@octokit/rest";
 import { env } from "./env";
@@ -142,10 +142,10 @@ export const getPullData = async (): Promise<MappedPull[]> => {
         // }));
         pull.state === "open"
           ? await octokit.request(REVIEW_QUERY, {
-              owner: pull.base.repo.owner.login,
-              repo: pull.base.repo.name,
-              pull_number: pull.number,
-            })
+            owner: pull.base.repo.owner.login,
+            repo: pull.base.repo.name,
+            pull_number: pull.number,
+          })
           : undefined;
 
       // cache the reviews if the pull is closed
@@ -158,32 +158,32 @@ export const getPullData = async (): Promise<MappedPull[]> => {
         pull.state !== "open"
           ? "pending"
           : await octokit.checks
-              .listForRef({
-                owner: pull.base.repo.owner.login,
-                repo: pull.base.repo.name,
-                ref: pull.head.ref,
-              })
-              .then((res) => {
-                if (
-                  res.data.check_runs.every(
-                    (check) => check.conclusion === "success"
-                  )
+            .listForRef({
+              owner: pull.base.repo.owner.login,
+              repo: pull.base.repo.name,
+              ref: pull.head.ref,
+            })
+            .then((res) => {
+              if (
+                res.data.check_runs.every(
+                  (check) => check.conclusion === "success"
                 )
-                  return "passing";
-                else if (
-                  res.data.check_runs.some(
-                    (check) => check.conclusion === "failure"
-                  )
+              )
+                return "passing";
+              else if (
+                res.data.check_runs.some(
+                  (check) => check.conclusion === "failure"
                 )
-                  return "failing";
-                else return "pending";
-              })
-              .catch((e) => {
-                console.error(
-                  `Error getting checks for ${repo + pull.number}: ${e}`
-                );
+              )
                 return "failing";
-              });
+              else return "pending";
+            })
+            .catch((e) => {
+              console.error(
+                `Error getting checks for ${repo + pull.number}: ${e}`
+              );
+              return "failing";
+            });
 
       /**
        * determine if this pull is on hold
@@ -194,7 +194,7 @@ export const getPullData = async (): Promise<MappedPull[]> => {
 
       const approved = reviews
         ? reviews.data.filter((review) => review.state === "APPROVED").length >=
-          REQUIRED_APPROVAL_COUNT
+        REQUIRED_APPROVAL_COUNT
         : false;
 
       /**
@@ -233,12 +233,12 @@ export const getPullData = async (): Promise<MappedPull[]> => {
         approved,
         reviews: reviews
           ? reviews.data.map((review) => {
-              return {
-                user: review.user?.login ?? "unknown",
-                state: review.state,
-                submittedAt: review.submitted_at ?? pull.created_at,
-              };
-            })
+            return {
+              user: review.user?.login ?? "unknown",
+              state: review.state,
+              submittedAt: review.submitted_at ?? pull.created_at,
+            };
+          })
           : [],
         baseBranch: pull.base.ref,
         waitingForAutoMerge: waitingForAutoMerge,
