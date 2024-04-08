@@ -157,7 +157,7 @@ export const makeCompactBlocks = async (pullsIn: MappedPull[]) => {
 
     const repoEmoji = isRepoName(pull.repository)
       ? repoSlackEmojis[pull.repository]
-      : pull.repository;
+      : `:${pull.repository.replaceAll(/[^a-zA-Z0-9]/g, "")}_icon:`;
 
     const isMostRecent = mostRecentPulls.some(
       (mostRecentPull) =>
