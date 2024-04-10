@@ -8,5 +8,6 @@ export default [
   "aerodome-usa/aerodome.com-v2",
   // "reformcollective/legwork-marketing",
   // "boost-insurance/boost",
-  "reformcollective/impilo"
+  "reformcollective/impilo",
+  "reformcollective/thoughtly"
 ]
