@@ -73,7 +73,7 @@ export const makeDevBlocks = (pulls: MappedPull[]) => {
                 : pull.checkState === "failing"
                 ? ":pull_fail:"
                 : ":pull_wait:"
-            } ${pull.draft ? "*[  DRAFT  ]*\t" : ""}*${pull.number}*\t${
+            } ${pull.draft ? "*[  DRAFT  ]*\t" : ""}*[${pull.number}](${pull.link})*\t${
               pull.title
             }`,
           },
