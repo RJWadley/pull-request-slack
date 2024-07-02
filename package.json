@@ -18,6 +18,7 @@
 		"typescript": "^5.3.3"
 	},
 	"devDependencies": {
+		"@biomejs/biome": "^1.8.3",
 		"@tsconfig/recommended": "^1.0.3",
 		"@types/node": "^20.11.24"
 	}

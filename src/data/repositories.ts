@@ -11,4 +11,4 @@ export default [
 	"reformcollective/impilo",
 	"reformcollective/thoughtly",
 	"reformcollective/recurrency",
-];
+]
