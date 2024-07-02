@@ -1,13 +1,14 @@
 {
-  "hume-website": ":hume_icon:",
-  "legwork": ":legwork_icon:",
-  "Runway_V2": ":runway_icon:",
-  "reform-gatsby-starter": ":gatsby_starter_icon:",
-  "reform_3.0": ":reform_icon:",
-  "FlowFi": ":flowfi_icon:",
-  "aerodome.com-v2": ":aerodome_icon:",
-  "legwork-marketing": ":legwork_marketing_icon:",
-  "response": ":response_icon:",
-  "campfire": ":campfire_logo:",
-  "boost": ":boost_icon:"
+	"DO_NOT_UPDATE_THIS_FILE": "the icon name will be generated automatically",
+	"hume-website": ":hume_icon:",
+	"legwork": ":legwork_icon:",
+	"Runway_V2": ":runway_icon:",
+	"reform-gatsby-starter": ":gatsby_starter_icon:",
+	"reform_3.0": ":reform_icon:",
+	"FlowFi": ":flowfi_icon:",
+	"aerodome.com-v2": ":aerodome_icon:",
+	"legwork-marketing": ":legwork_marketing_icon:",
+	"response": ":response_icon:",
+	"campfire": ":campfire_logo:",
+	"boost": ":boost_icon:"
 }

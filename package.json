@@ -1,25 +1,24 @@
 {
-  "name": "pull-request-slack",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "clean": "node -v && bun upgrade && rm -f .git/index.lock && rm -f .git/refs/heads/master.lock && git fetch && git pull && bun install",
-    "start_bad": "bun run clean && bun --bun --watch ./src/index",
-    "start": "npm run clean && tsc --outDir build && node build/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "@octokit/rest": "^20.0.2",
-    "@octokit/types": "^12.6.0",
-    "@slack/bolt": "^3.17.1",
-    "dotenv": "^16.4.5",
-    "typescript": "^5.3.3"
-  },
-  "devDependencies": {
-    "@tsconfig/recommended": "^1.0.3",
-    "@types/node": "^20.11.24"
-  }
+	"name": "pull-request-slack",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"scripts": {
+		"clean": "node -v && bun upgrade && rm -f .git/index.lock && rm -f .git/refs/heads/master.lock && git fetch && git pull && bun install",
+		"start": "bun run clean && bun --bun --watch ./src/index",
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"author": "",
+	"license": "ISC",
+	"dependencies": {
+		"@octokit/rest": "^20.0.2",
+		"@octokit/types": "^12.6.0",
+		"@slack/bolt": "^3.17.1",
+		"dotenv": "^16.4.5",
+		"typescript": "^5.3.3"
+	},
+	"devDependencies": {
+		"@tsconfig/recommended": "^1.0.3",
+		"@types/node": "^20.11.24"
+	}
 }
