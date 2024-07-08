@@ -9,6 +9,6 @@ export default [
 	// "reformcollective/legwork-marketing",
 	// "boost-insurance/boost",
 	"reformcollective/impilo",
-	"reformcollective/thoughtly",
+	"thoughtlead.io/website",
 	"reformcollective/recurrency",
 ]
