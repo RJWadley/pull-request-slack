@@ -8,15 +8,12 @@ import { sendMessage } from "./sendMessage"
 
 import { exec as _exec } from "node:child_process"
 import { promisify } from "node:util"
-import { heartbeat } from "./health"
 
 const exec = promisify(_exec)
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
 const loop = async () => {
-	heartbeat()
-
 	logMessage("Checking for updates...")
 	const pulls = await getPullData()
 	logMessage(`Checked for updates. ${pulls.length} pulls found.`)
@@ -52,7 +49,8 @@ const loop = async () => {
 		hasNewNonLegwork ? "New Pull Requests" : "Updated Pull Requests",
 	)
 
-	await sleep(1000 * 60)
+	/* update every 10 minutes */
+	await sleep(10_000 * 60)
 
 	const out = await exec("git fetch && git pull")
 	logMessage(`Updated myself! ${out.stdout}${out.stderr}`)
