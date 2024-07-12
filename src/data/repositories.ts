@@ -11,4 +11,5 @@ export default [
 	"reformcollective/impilo",
 	"thoughtlead-io/website",
 	"reformcollective/recurrency",
+	"reformcollective/jams",
 ]
