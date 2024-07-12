@@ -4,7 +4,7 @@
 	"description": "",
 	"main": "index.js",
 	"scripts": {
-		"clean": "node -v && bun upgrade && rm -f .git/index.lock && rm -f .git/refs/heads/master.lock && git fetch && git pull && bun install",
+		"clean": "node -v && rm -f .git/index.lock && rm -f .git/refs/heads/master.lock && git fetch && git pull && bun install",
 		"start_bad": "bun run clean && bun --bun --watch ./src/index",
 		"start": "npm run clean && tsc --outDir build && node build/index.js",
 		"test": "echo \"Error: no test specified\" && exit 1"
