@@ -44,8 +44,8 @@ const loop = async () => {
 		hasNewNonLegwork ? "New Pull Requests" : "Updated Pull Requests",
 	)
 
-	/* update every 10 minutes */
-	await sleep(10_000 * 60)
+	/* update every 5 minutes */
+	await sleep(5_000 * 60)
 
 	loop()
 }
