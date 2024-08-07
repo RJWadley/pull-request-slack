@@ -12,4 +12,5 @@ export default [
 	"thoughtlead-io/website",
 	"reformcollective/recurrency",
 	"reformcollective/jams",
+	"reformcollective/rotate-marketing",
 ]
