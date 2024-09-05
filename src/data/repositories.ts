@@ -10,7 +10,7 @@ export default [
 	// "boost-insurance/boost",
 	"reformcollective/impilo",
 	"thoughtlead-io/website",
-	"reformcollective/recurrency",
 	"reformcollective/jams",
 	"reformcollective/rotate-marketing",
+	"reformcollective/lang-ai",
 ]
